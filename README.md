@@ -1,0 +1,2 @@
+# Star-Classifier-For-Mario-64
+From an image of the Super Mario 64 game, the neural network model created will classify how many stars you currently have.  This is more precise precise timing than manually splitting.  This will be less work for the speedrunner.  And you will be able to get segment times from a mario 64 speedrun video of another player.  Splitting at each star is now viable because it is automatic.
