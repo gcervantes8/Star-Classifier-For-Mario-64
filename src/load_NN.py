@@ -81,7 +81,7 @@ def fast_screenshot_mss(sct, top, left, width, height):
         
 
 if __name__ == "__main__":
-    model = loadNeuralNetworkModel('Model')
+    model = loadNeuralNetworkModel('High_acc_model_205_imgs_30epochs')
     
     #Sets coordinates to screenshot for pil, should be set to cover the game screen
     x, y, w, h = 61, 82, 615, 449
