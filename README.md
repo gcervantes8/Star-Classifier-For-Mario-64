@@ -7,7 +7,7 @@ More precise timing than manually splitting.
 
 Less work for the speedrunner.
 
-Get split times live or from existing video.
+Ability to get split times live or from an existing video.
 
 Makes splitting at each star viable.
 
@@ -18,6 +18,9 @@ Requirements:
 * Python 3.6
 * Tensorflow library (or any other backend library like Theano, testing was done on Tensorflow)
 * Keras library
+* MSS library
+* Pillow Library
+* Numpy Library
 
 
 ## High level functions
@@ -36,10 +39,12 @@ src/load_NN.py -  This module loads an existing model and uses it to split at gi
 
 Data is cropped and resized while getting data for training.  Original image is stored as a screenshot of the whole game, when retrieving the images used for training the screenshot of the whole game is cropped to only the star number.
 
-Image that is fed to neural network is cropped image of the star number of the game that's in the top-right corner.  Image of the data directory structure is of the screenshot of the game.
+Image that is fed to neural network is cropped image of the star number of the game that's in the top-right corner.  Image in the data directory structure is a screenshot of the game.
 
 
-![Sample image of game from player Siglemic](github_sample_images/sample_data_siglemic_1.jpg) ![Sample image of game from player Cheese05](github_sample_images/sample_data_cheese05_1.jpg) ![Sample image of game from player Xiah](github_sample_images/sample_data_xiah_1.jpg)
+![Sample image of game from player Siglemic](github_sample_images/sample_data_siglemic_1.jpg) 
+![Sample image of game from player Cheese05](github_sample_images/sample_data_cheese05_1.jpg) 
+![Sample image of game from player Xiah](github_sample_images/sample_data_xiah_1.jpg)
 ![Sample image of game from player ZDeztroyerz](github_sample_images/sample_data_zdeztroyerz_1.png)
 
 
@@ -134,7 +139,11 @@ In testing I found that the application can misclassify if you are using an appl
 
 #### Generated images
 
-![Generated image of star counter](github_sample_images/generated_preview_1.jpeg) ![Generated image of star counter](github_sample_images/generated_preview_2.jpeg) ![Generated image of star counter](github_sample_images/generated_preview_3.jpeg) ![Generated image of star counter](github_sample_images/generated_preview_4.jpeg) ![Generated image of star counter](github_sample_images/generated_preview_5.jpeg)
+![Generated image of star counter](github_sample_images/generated_preview_1.jpeg) 
+![Generated image of star counter](github_sample_images/generated_preview_2.jpeg) 
+![Generated image of star counter](github_sample_images/generated_preview_3.jpeg) 
+![Generated image of star counter](github_sample_images/generated_preview_4.jpeg) 
+![Generated image of star counter](github_sample_images/generated_preview_5.jpeg)
 
 
 These are some images that were generated with shift in position and slight modifications in color 
