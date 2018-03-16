@@ -3,7 +3,7 @@
 @author: Gerardo Cervantes
 """
 #Star grab to fade out is ~4.07 seconds
-#First star counter appearance is 50.12 seconds into the run (English version of Mario 64 NSTC)
+#First star counter appearance is 50.12 seconds into the run (English version of Mario 64 NTSC)
 
 import numpy as np
 from PIL import Image, ImageGrab
@@ -81,7 +81,7 @@ def fast_screenshot_mss(sct, top, left, width, height):
         
 
 if __name__ == "__main__":
-    model = loadNeuralNetworkModel('High_acc_model_205_imgs_30epochs')
+    model = loadNeuralNetworkModel('../models/High_acc_model_205_imgs_30epochs.hdf5')
     
     #Sets coordinates to screenshot for pil, should be set to cover the game screen
     x, y, w, h = 61, 82, 615, 449
