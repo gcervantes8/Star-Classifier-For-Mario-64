@@ -38,6 +38,12 @@ Data is cropped and resized while getting data for training.  Original image is 
 
 Image that is fed to neural network is cropped image of the star number of the game that's in the top-right corner.  Image of the data directory structure is of the screenshot of the game.
 
+[[https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/tree/master/github_sample_images/sample_data_siglemic_1.jpg|alt=Sample image of game from player Siglemic]]
+[[https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/tree/master/github_sample_images/sample_data_cheese05_1.jpg|alt=Sample image of game from player Cheese05]]
+
+[[https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/tree/master/github_sample_images/sample_data_xiah_1.jpg|alt=Sample image of game from player Xiah]]
+[[https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/tree/master/github_sample_images/sample_data_zdeztroyerz_1.png|alt=Sample image of game from player ZDeztroyerz]]
+
 ### Data gathering
 
 Data was manually gathered by downloading videos of speedrunners and putting it in the correct folder depending on how many stars they had.
@@ -89,21 +95,23 @@ Star numbers go up to 120 because there is that many stars in the game, optional
 
 This directory structure for the data was chosen so that players could be separated.  
 Separating images from different players is done so that we can take an equal amount of images from each player, the alternative is to have all the images in one directory and choosing 
-images for training randomly.  The benefits gained from this is if one player has many more images of the game, then we don't want their images to be chosen most of the time for training.  
-There is a need for the neural network model to be robust despite what video settings the player is using.  
+images for training randomly.  The benefits gained from separating players is if one player has many more images of the game, then we don't want their images to be chosen most of the time for training.  
+Choosing images from different players to give to the neural network improves the robustness of the neural network because it will learn from different video settings.
 
 ## Challenges/Problems
 
 
 ### Data Challenges/Problems
 
+[[https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/tree/master/github_sample_images/jpg_img_with_internet_problems_cheese05.jpg|alt=Sample image of star counter from player Cheese05 in jpg format when they had internet problems]]
+
 Image compression - JPG and PNG
-Images were sometimes taken from video streaming platform, when their internet is bad, the image can be pixelated and not useful for training
-Players use different video settings to record gameplay.
+Images were sometimes taken from video streaming platform, when their internet is bad, the image can be pixelated and not useful for training.
+Players can use a wide variety of video settings to record gameplay.
 
 ### Learning from background of images
 
-Due to the data being gathered being from videos of speedrunners.  There was a problem of the neural network learning what stage you were at and making a prediction based on that.
+Due to the data being gathered being from videos of speedrunners.  The neural network learn started learning what stage you were at and making a prediction based on that.
 
 For example, most Mario 64 videos do stars 96 through 103 in a stage called Snowman's Land, the neural network learned that if the background next to the star number is filled with white snow, then it is most likely one of the stars 96 to 103.
 
@@ -111,9 +119,21 @@ This is likely happened because of lack of different data, and it might have bee
 
 This was fixed by data generation, and an increase in data.
 
+### Screenshot modifications from f.lux
+
+In testing I found that the application can misclassify if you are using an application like f.lux which changes colors on the screen.  This tool will usually still work despite f.lux, but if the settings are really high, then it will no longer work.
 
 
 ### Data Modifications/Preprocessing
+
+
+[[https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/tree/master/github_sample_images/generated_preview_1.jpeg|alt=Generated image of star counter]]
+[[https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/tree/master/github_sample_images/generated_preview_2.jpeg|alt=Generated image of star counter]]
+[[https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/tree/master/github_sample_images/generated_preview_3.jpeg|alt=Generated image of star counter]]
+[[https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/tree/master/github_sample_images/generated_preview_4.jpeg|alt=Generated image of star counter]]
+[[https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/tree/master/github_sample_images/generated_preview_5.jpeg|alt=Generated image of star counter]]
+
+
 Benefit of preprocessing is it makes the neural network more robust
 Preprocessing and data generation help with:
 
@@ -131,16 +151,16 @@ To be able to be use this tool in real time, it needs to have a low delay betwee
 
 Initial testing showed that most of the running time was in taking a screenshot.
 
-### Fast screenshot tool tested
+### Fast screenshot tools tested
 
 * PIL library - The PIL library is used for most of the preprocessing steps, so it would be convenient to use this format.
 * MSS library - Was found to be faster than using the PIL library, this is the current method used because it is faster than using the PIL library even if you convert to PIL format after taking the screenshot.
 * win32 API - To use this, you have to specify the program name that you want to take the screenshot of, it found the program name but when taking the screenshot the screenshot came out to be a black screen, this is supposed to be faster, so if a speedup is needed then looking more into this API could be helpful.
 
-### Current Speed
+### Current Application Speed
 
 
-Super Mario 64 runs in 29.97 frames per second (NSTC), the program is able to screenshot and classify how many stars you have in slightly less than a frame.
+Super Mario 64 runs in 29.97 frames per second (NTSC), the program is able to screenshot and classify how many stars you have in slightly less than a frame.
 
 If there is a need for a speedup, then there are several options.  Get a faster screenshot library, this will have the most impact in speed.  Additionally you could make a smaller neural network model.
 
@@ -169,7 +189,8 @@ They greatly helped in lowering the amount of time needed for the neural network
 In the final version of the model, it didn't take very long for it to classify with an accuracy of over 99%.  The model provided on Github was trained even after it reached over 99% accuracy.
 The model provided was trained much longer and was stopped when validation loss would no longer decrease.
 
-The application works well when running in real time.  The application can misclassify if you are using an application like f.lux which changes colors on the screen and the setting in f.lux sets it to high.
+The application works well when running in real time.  
+
 
 
 ## Author
