@@ -48,7 +48,7 @@ Image that is fed to neural network is cropped image of the star number of the g
 ![Sample image of game from player Xiah](https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/tree/master/github_sample_images/sample_data_xiah_1.jpg)
 
 
-![Sample image of game from player ZDeztroyerz](https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/tree/master/github_sample_images/sample_data_zdeztroyerz_1.png)
+![Sample image of game from player ZDeztroyerz](github_sample_images/sample_data_zdeztroyerz_1.png)
 
 
 
@@ -112,7 +112,10 @@ Choosing images from different players to give to the neural network improves th
 
 ### Data Challenges/Problems
 
-[[https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/tree/master/github_sample_images/jpg_img_with_internet_problems_cheese05.jpg|alt=Sample image of star counter from player Cheese05 in jpg format when they had internet problems]]
+
+![Sample image of star counter from player Cheese05 in jpg format when they had internet problems](https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/tree/master/github_sample_images/jpg_img_with_internet_problems_cheese05.jpg)
+
+
 
 Image compression - JPG and PNG
 Images were sometimes taken from video streaming platform, when their internet is bad, the image can be pixelated and not useful for training.
