@@ -39,13 +39,13 @@ Data is cropped and resized while getting data for training.  Original image is 
 Image that is fed to neural network is cropped image of the star number of the game that's in the top-right corner.  Image of the data directory structure is of the screenshot of the game.
 
 
-![Sample image of game from player Siglemic](https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/tree/master/github_sample_images/sample_data_siglemic_1.jpg)
+![Sample image of game from player Siglemic](github_sample_images/sample_data_siglemic_1.jpg)
 
 
-![Sample image of game from player Cheese05](https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/tree/master/github_sample_images/sample_data_cheese05_1.jpg)
+![Sample image of game from player Cheese05](github_sample_images/sample_data_cheese05_1.jpg)
 
 
-![Sample image of game from player Xiah](https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/tree/master/github_sample_images/sample_data_xiah_1.jpg)
+![Sample image of game from player Xiah](github_sample_images/sample_data_xiah_1.jpg)
 
 
 ![Sample image of game from player ZDeztroyerz](github_sample_images/sample_data_zdeztroyerz_1.png)
@@ -113,7 +113,7 @@ Choosing images from different players to give to the neural network improves th
 ### Data Challenges/Problems
 
 
-![Sample image of star counter from player Cheese05 in jpg format when they had internet problems](https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/tree/master/github_sample_images/jpg_img_with_internet_problems_cheese05.jpg)
+![Sample image of star counter from player Cheese05 in jpg format when they had internet problems](github_sample_images/jpg_img_with_internet_problems_cheese05.jpg)
 
 
 
@@ -139,19 +139,19 @@ In testing I found that the application can misclassify if you are using an appl
 ### Data Modifications/Preprocessing
 
 
-![Generated image of star counter](https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/tree/master/github_sample_images/generated_preview_1.jpeg)
+![Generated image of star counter](github_sample_images/generated_preview_1.jpeg)
 
 
-![Generated image of star counter](https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/tree/master/github_sample_images/generated_preview_2.jpeg)
+![Generated image of star counter](github_sample_images/generated_preview_2.jpeg)
 
 
-![Generated image of star counter](https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/tree/master/github_sample_images/generated_preview_3.jpeg)
+![Generated image of star counter](github_sample_images/generated_preview_3.jpeg)
 
 
-![Generated image of star counter](https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/tree/master/github_sample_images/generated_preview_4.jpeg)
+![Generated image of star counter](github_sample_images/generated_preview_4.jpeg)
 
 
-![Generated image of star counter](https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/tree/master/github_sample_images/generated_preview_5.jpeg)
+![Generated image of star counter](github_sample_images/generated_preview_5.jpeg)
 
 
 
