@@ -2,7 +2,7 @@
 """
 Created on Sat Dec 23 09:09:26 2017
 
-@author: ZDeztroyerz
+@author: Gerardo Cervantes
 """
 
 import matplotlib.pyplot as plt
