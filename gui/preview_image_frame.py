@@ -136,10 +136,16 @@ class PreviewImageFrame(tk.Frame):
         
         return x_entry_text, y_entry_text, width_entry_text, height_entry_text
     
-    def are_invalid_coordinates(self, x, y, width, height):
-        are_invalid_coordinates = (x == None) or (y == None) or (width == None) or (height == None)
-        return are_invalid_coordinates
+    def are_invalid_coordinates(self, x, y, width, height): 
+        return not (self.is_integer(x) and self.is_integer(y) and self.is_integer(width) and self.is_integer(height))
     
+    def is_integer(self, var):
+        try:
+            int(var)
+            return True
+        except (ValueError, TypeError) as e:
+            return False
+        
     def preview_button_clicked(self):
         x, y, width, height = self.get_coordinates()
         
@@ -147,7 +153,7 @@ class PreviewImageFrame(tk.Frame):
             print('Invalid coordinates')
             return
         
-        pil_img = self.screenshot_instance.screenshot_pil(x, y, width, height)
+        pil_img = self.screenshot_instance.screenshot_pil(int(x), int(y), int(width), int(height))
         self.show_image_on_label(pil_img)
         
     #Returns coordinates when the frame is closed
