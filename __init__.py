@@ -114,7 +114,7 @@ class MainWindow(tk.Frame):
     def _init_preferences(self):
         #If there wasn't any previous saved data on coordiantes or coordinates last used, creates new
         if self.coordinates == None:
-            self.coordiantes = Coordinates()
+            self.coordinates = Coordinates()
             
         if self.hotkeys == None:
             self.hotkeys = Hotkeys()
