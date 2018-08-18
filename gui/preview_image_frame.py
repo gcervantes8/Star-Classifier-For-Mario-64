@@ -29,7 +29,7 @@ class PreviewImageFrame(tk.Frame):
     width_stringvar = None
     height_stringvar = None
     
-    DEFAULT_IMAGE_PATH = 'github_images/generated_preview_1.jpeg'
+    DEFAULT_IMAGE_PATH = 'images/generated_preview_1.jpeg'
     
     def __init__(self, master):
         self.root = master

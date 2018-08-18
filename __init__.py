@@ -34,7 +34,7 @@ class MainWindow(tk.Frame):
     route_name = ''
     
     shared_preferences = None
-    icon_path = 'github_images/icon.png'
+    icon_path = 'images/icon.png'
     routes_directory = 'routes/'
     
     bg_color = '#47a3cc'
