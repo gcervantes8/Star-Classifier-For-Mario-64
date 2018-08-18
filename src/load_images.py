@@ -9,7 +9,7 @@ import os
 from PIL import Image
 from glob import glob
 import numpy as np
-from keras.preprocessing.image import img_to_array
+
 from preprocess import preprocess_images
 import random
 
@@ -30,9 +30,9 @@ def get_images(directory_path, images_per_star):
     return np_images, y_train
     
 #Converts pil images to numpy array
-#rgb colors are converted from 0 to 1 instead of 0 to 255
+#rgb colors scaled down to floats between 0 to 1 instead of 0 to 255
 def pil_imgs_to_numpy(pil_imgs):
-    
+    from keras.preprocessing.image import img_to_array
     np_images = [(img_to_array(image)/255) for image in pil_imgs]
     
     return np.array(np_images)
@@ -135,12 +135,16 @@ def get_images_from_dir(directory_path):
 #star number of the game, resizes accordingly
 def crop_and_resize_image(pil_img):
     
-    pil_img = pil_img.resize((452, 345), Image.ANTIALIAS) #Width,height
-    img_width, img_height = pil_img.size[0], pil_img.size[1]
-    pil_img = pil_img.crop((380, 0, img_width, img_height-300))
+#    pil_img = pil_img.resize((452, 345), Image.ANTIALIAS) #Width,height
+#    img_width, img_height = pil_img.size[0], pil_img.size[1]
+#    pil_img = pil_img.crop((380, 0, img_width, img_height-300))
     pil_img = pil_img.resize((67, 40), Image.ANTIALIAS) #Width,height
 #   img = img.convert('L') #Converts to black and white
 #   img.save(directory_path + '/test/' + 'output image name' + str(star_number) + '.png')
+    return pil_img
+
+def resize_image(pil_img):
+    pil_img = pil_img.resize((67, 40), Image.ANTIALIAS) #Width,height
     return pil_img
 
 #Given list of star numbers, returns the one hot representation for them
