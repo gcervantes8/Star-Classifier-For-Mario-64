@@ -9,8 +9,7 @@ import xml.etree.cElementTree as ET
 from coordinates import Coordinates
 from hotkeys import Hotkeys
 
-#Only needed to print as pretty xml
-import xml.dom.minidom
+
 
 class SharedPreferences():
     
@@ -73,10 +72,12 @@ class SharedPreferences():
         
         return coordinates, route_name, hotkeys
         
-    def xml_print(self, xml_str):
-        xml_dom = xml.dom.minidom.parseString(xml_str)
-        pretty_xml_as_string = xml_dom.toprettyxml()
-        print(pretty_xml_as_string)
+#    def xml_print(self, xml_str):
+#        #Only needed to print as pretty xml
+#        import xml.dom.minidom
+#        xml_dom = xml.dom.minidom.parseString(xml_str)
+#        pretty_xml_as_string = xml_dom.toprettyxml()
+#        print(pretty_xml_as_string)
         
 if __name__ == "__main__":
     shared_prefs = SharedPreferences()

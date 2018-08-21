@@ -6,7 +6,6 @@ Created on Fri Dec 29 16:27:26 2017
 """
 
 import numpy as np
-
 import time
 
 #Generates more images to be used for training data

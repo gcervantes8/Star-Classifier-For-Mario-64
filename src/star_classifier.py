@@ -11,15 +11,13 @@ from load_images import resize_image, pil_imgs_to_numpy
 
 import time
 from threading import Thread
-import win32com.client as comclt
-import pythoncom
+from win32com.client import Dispatch
+from pythoncom import CoInitialize
 
 from screenshot_taker import ScreenshotTaker
 from print_progress import print_progress_information
 
 class StarClassifier():
-    
-    
     
     #Default model
     model_path = 'models/High_acc_model_205_imgs_30epochs.hdf5'
@@ -59,12 +57,12 @@ class StarClassifier():
     #Split key is the key that will be given to livesplit to split, should be a str
     #Split_wait_time is float of how long it should wait until it should split
     def split(self, split_key, split_wait_time):
-        pythoncom.CoInitialize()
+        CoInitialize()
     
         if split_wait_time > 0:
             time.sleep(split_wait_time)
         print('split')
-        wsh = comclt.Dispatch("WScript.Shell")
+        wsh = Dispatch("WScript.Shell")
         wsh.AppActivate('LiveSplit') # select livesplit application
         wsh.SendKeys(split_key)
     

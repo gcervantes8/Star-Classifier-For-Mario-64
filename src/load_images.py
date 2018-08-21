@@ -5,19 +5,20 @@ Created on Thu Dec 21 20:42:17 2017
 @author: Gerardo Cervantes
 """
 
-import os
+
 from PIL import Image
 from glob import glob
 import numpy as np
 
-from preprocess import preprocess_images
-import random
+from random import sample
 
 #directory_path is the one described in the readme, images and star label will be gotten from this directory
 #Addtionally it will generate images from preexisting images, this is done to help with robustness of nn
 #images_per_star is the max amount of images it will take from each star
 #Returns list of images to be used for training, and the labels in np array of size (samples, # of stars)
 def get_images(directory_path, images_per_star):
+    
+    from preprocess import preprocess_images
     paths, y_train = get_image_paths(directory_path, images_per_star)
 
 
@@ -63,9 +64,10 @@ def get_image_paths(directory_path, images_per_star):
     paths = []
     star_numbers = []
     subdirectory_paths = glob(directory_path +'/*/')
+    from os import path
     for star_directory in subdirectory_paths:
         
-        dir_name = os.path.basename(os.path.dirname(star_directory))
+        dir_name = path.basename(path.dirname(star_directory))
         
         try:
             star_number = int(dir_name)
@@ -117,7 +119,7 @@ def get_images_from_star_directory(star_directory_path, image_amount):
             image_amount -= images_it_has
         else:
             #Takes a sample
-            image_paths += random.sample(dir_image_paths, images_to_get)
+            image_paths += sample(dir_image_paths, images_to_get)
             image_amount -= images_to_get
         dir_amount -= 1
     return image_paths

@@ -7,9 +7,10 @@
 import tkinter as tk
 from PIL import ImageTk, Image
 
-#Module in src folder
-import sys
-sys.path.insert(0, 'src/')
+
+#Module in src folder that takes screenshots
+from sys import path
+path.insert(0, 'src/')
 from screenshot_taker import ScreenshotTaker
 
 class PreviewImageFrame(tk.Frame):

@@ -5,9 +5,9 @@
 """
 
 import tkinter as tk
-import sys
+from sys import path
 
-sys.path.insert(0, 'gui')
+path.insert(0, 'gui')
 from preview_image_frame import PreviewImageFrame
 from progress_display_frame import ProgressDisplayFrame
 from select_route_frame import SelectRouteFrame
@@ -15,7 +15,7 @@ from run_status_frame import RunStatusFrame
 from input_split_keys_frame import InputSplitKeys
 from start_button_frame import StartButtonFrame
 
-sys.path.insert(0, 'src')
+path.insert(0, 'src')
 from threading import Thread
 
 from star_classifier import StarClassifier

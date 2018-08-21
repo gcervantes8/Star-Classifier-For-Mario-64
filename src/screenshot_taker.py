@@ -5,14 +5,9 @@
 """
 from PIL import Image, ImageGrab
 
-import win32gui
-import win32ui
-import win32con
-
 #win32 interface is the fastest, mss is next, and pil is the slowest
 
-import mss
-import mss.tools
+from mss import mss
 import time
 
 class ScreenshotTaker():
@@ -48,18 +43,21 @@ class ScreenshotTaker():
 
     #Has problem finding Amarec program, finds the windows with 'AmaRecTV', but a black screenshot
     #Is supposed to be able to create fast screenshots
-    def fast_screenshot(self, window_name, save_name, w, h):
-        hwnd = win32gui.FindWindow(None, window_name)
-        wDC = win32gui.GetWindowDC(hwnd)
-        dcObj=win32ui.CreateDCFromHandle(wDC)
-        cDC=dcObj.CreateCompatibleDC()
-        dataBitMap = win32ui.CreateBitmap()
-        dataBitMap.CreateCompatibleBitmap(dcObj, w, h)
-        cDC.SelectObject(dataBitMap)
-        cDC.BitBlt((0,0),(w, h) , dcObj, (0,0), win32con.SRCCOPY)
-        dataBitMap.SaveBitmapFile(cDC, save_name)
-        #Free ResourcesS
-        dcObj.DeleteDC()
-        cDC.DeleteDC()
-        win32gui.ReleaseDC(hwnd, wDC)
-        win32gui.DeleteObject(dataBitMap.GetHandle())
+#    def fast_screenshot(self, window_name, save_name, w, h):
+#        import win32gui
+#        import win32ui
+#        import win32con
+#        hwnd = win32gui.FindWindow(None, window_name)
+#        wDC = win32gui.GetWindowDC(hwnd)
+#        dcObj=win32ui.CreateDCFromHandle(wDC)
+#        cDC=dcObj.CreateCompatibleDC()
+#        dataBitMap = win32ui.CreateBitmap()
+#        dataBitMap.CreateCompatibleBitmap(dcObj, w, h)
+#        cDC.SelectObject(dataBitMap)
+#        cDC.BitBlt((0,0),(w, h) , dcObj, (0,0), win32con.SRCCOPY)
+#        dataBitMap.SaveBitmapFile(cDC, save_name)
+#        #Free ResourcesS
+#        dcObj.DeleteDC()
+#        cDC.DeleteDC()
+#        win32gui.ReleaseDC(hwnd, wDC)
+#        win32gui.DeleteObject(dataBitMap.GetHandle())
