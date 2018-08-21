@@ -6,7 +6,7 @@ Created on Fri Dec 29 16:27:26 2017
 """
 
 import numpy as np
-from keras.preprocessing.image import ImageDataGenerator
+
 import time
 
 #Generates more images to be used for training data
@@ -51,6 +51,7 @@ def generate_images(datagen, images, labels):
 #Returns the generator it will use to generate the new images
 #This generator will zoom in, shift in width and height, and slighlty change color
 def mario_image_generator():
+    from keras.preprocessing.image import ImageDataGenerator
     image_gen = ImageDataGenerator(
         rotation_range=0,
         width_shift_range=0.05,
