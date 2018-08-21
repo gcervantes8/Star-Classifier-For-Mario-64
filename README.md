@@ -33,7 +33,7 @@ __init__.py - starts the program
 
 ### Data Information
 
-Image fed to neural network is cropped image of the star number.
+Image fed to neural network is cropped image of star number.
 
 
 ![Sample image of game from player Siglemic](images/sample_data_siglemic_1.jpg) 
@@ -46,11 +46,12 @@ Image fed to neural network is cropped image of the star number.
 
 ### Data gathering
 
-Data was manually gathered by downloading videos of speedrunners and putting it in the correct folder depending on how many stars they have
+Data was gathered by downloading videos of speedrunners and putting it in the correct folder depending on how many stars they have
 
 ### Data labels
 
 Output is a one-hot encoding from 0 to 120 of how many stars you have
+
 2 more binary targets were added as 121 (black screen) and 122 (white screen)
 
 ### Data directory structure
@@ -100,9 +101,9 @@ More training data was used by generating images that were shifted and had color
 
 ### Fast screenshot tools tested
 
-* PIL library - The PIL library is used for most of the preprocessing steps, so it would be convenient to use this format.
-* MSS library - Was found to be faster than using the PIL library, this is the current method used because it is faster than using the PIL library even if you convert to PIL format after taking the screenshot.
-* win32 API - Supposed to be faster, could not get screenshots to work with this api.
+* PIL library - PIL library comes with a screenshot utility
+* MSS library - Was than PIL library, this is the current method used
+* win32 API - Supposed to be faster, could not get screenshots to work with this API
 
 
 ### Current Application Speed
@@ -119,14 +120,12 @@ Batch normalization, weight initialization, normalizing input helped in lowering
 
 
 ## Model
-* 3 Convolution hidden layers with 32, 32, and 16 convolutions per layer.
+* 3 Convolution hidden layers with 32, 32, and 16 convolutions per layer
 * Max pooling after every convolution hidden layer
 * 1 Dense hidden layer with 128 units after convolution and pooling layers
-* Relu was used for all the hidden layers
-* Softmax was used for the output layer
-* Batch normalization was used after every hidden layer
-* he uniform weight initialization
-* Regularization of 0.0001
+* Relu for hidden layers, Softmax for output
+* Batch normalization after every hidden layer, he uniform weight initialization
+* L2 Regularization 0.0001
 * Loss function: Categorical Cross entropy
 * Optimizer: Nadam, learning rate of 0.0006
 
