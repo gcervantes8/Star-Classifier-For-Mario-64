@@ -97,7 +97,7 @@ This is how data is stored for training
 ![Generated image of star counter](images/generated_preview_5.jpeg)
 
 
-More training data was used by generating images that were shifted and had color changes.  Keras.preprocessing library helped with this.  Look at /src/preprocess.py for more information
+More training data was used by generating images that were shifted and had color changes.  Keras.preprocessing library helped with this.  Look at /src/train_model_code/preprocess.py for more information
 
 ### Fast screenshot tools tested
 
