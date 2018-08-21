@@ -22,7 +22,7 @@ class ScreenshotTaker():
     def screenshot_mss(self, top, left, width, height):
         start_time = time.time()
         if self.sct == None:
-            self.sct = mss.mss()
+            self.sct = mss()
         
         # The screen part to capture
         monitor = {'top': top, 'left': left, 'width': width, 'height': height}
