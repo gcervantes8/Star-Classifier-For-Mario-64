@@ -22,20 +22,20 @@ class InputSplitKeys(tk.Frame):
     #Updates self.hotkeys variable with what's on the entries
     def update_hotkeys(self):
         split_key = self.split_stringvar.get()
-        reset_key = self.reset_springvar.get()
+#        reset_key = self.reset_springvar.get()
         
         if self.hotkeys != None:
             self.hotkeys.set_split_key(split_key)
-            self.hotkeys.set_reset_key(reset_key)
+#            self.hotkeys.set_reset_key(reset_key)
             
     def create_split_keys_frame(self, master):
         split_keys_frame = tk.Frame(master)
         
         self.split_frame, _, self.split_entry, self.split_stringvar = self.create_label_entry_pair(split_keys_frame, 'Split Key ')
-        self.reset_frame, _, self.reset_entry, self.reset_springvar = self.create_label_entry_pair(split_keys_frame, 'Reset Key')
+#        self.reset_frame, _, self.reset_entry, self.reset_springvar = self.create_label_entry_pair(split_keys_frame, 'Reset Key')
         
         self.split_frame.grid(column = 0, row = 0)
-        self.reset_frame.grid(column = 0, row = 1)
+#        self.reset_frame.grid(column = 0, row = 1)
         
         if self.hotkeys != None:
             self.split_entry.insert(0, self.hotkeys.get_split_key())
@@ -47,19 +47,19 @@ class InputSplitKeys(tk.Frame):
     def set_bg_color(self, bg_color):
         self.configure(background = bg_color)
         self.split_frame.configure(background = bg_color)
-        self.reset_frame.configure(background = bg_color)
+#        self.reset_frame.configure(background = bg_color)
     def set_hotkeys(self, hotkeys):
         self.hotkeys = hotkeys
         
         self.clear_entries()
         
         self.split_entry.insert(0, self.hotkeys.get_split_key())
-        self.reset_entry.insert(0, self.hotkeys.get_reset_key())
+#        self.reset_entry.insert(0, self.hotkeys.get_reset_key())
     
     #Clears the entry items
     def clear_entries(self):
         self.split_entry.delete(0, 'end')
-        self.reset_entry.delete(0, 'end')
+#        self.reset_entry.delete(0, 'end')
     
     #Returns tuple with 3 items, tk.frame containing the tk.label and tk.entry, the tk.label, and the tk.entry
     def create_label_entry_pair(self, master, label_text):
