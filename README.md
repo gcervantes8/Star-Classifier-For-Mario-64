@@ -12,21 +12,56 @@ Ability to get split times live or from an existing video
 Makes splitting at each star viable
 
 
-## To run
+## To run from source code
 
 Requirements:
 * Python 3.6
-* Tensorflow library (or any other backend library like Theano, testing was done on Tensorflow)
+* Tensorflow library - Comes with numpy (other backend library like Theano can be used but wasn't tested on)
 * Keras library
 * MSS library
 * Pillow Library
-* Numpy Library
+* pywin32
 
 
-## High level functions
+## High level function
 
 __init__.py - starts the program
 
+
+## How to use
+
+![Image of GUI main menu](images/MainMenu.png) 
+
+This is the main menu
+
+The top shows the route you are running.  Create custom routes by adding them to the routes directory.
+
+### Setup
+
+#### Key setups
+
+![Image of GUI key setup window ](images/Keysetup.png) 
+
+This is the key setup window 
+
+You put the key that you use to split in on LiveSplit here
+
+There are the keys you can use to split.
+https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.sendkeys?redirectedfrom=MSDN&view=netframework-4.7.2
+
+
+#### Coordinates
+
+![Image of GUI coordinates window ](images/Coordinates.png) 
+
+Clicking the coordinates button, this window will pop up.
+
+
+The coordiantes will screenshot the game, and you can click preview to see where the coordinates are.
+You want to set coordainates to be the star counter in your game, preferably to the highest quality you have
+A width to height ratio of 1.675 is the best but not necessary, the best thing to do is to have a high quality version of your game, by making amarec or OBS bigger and taking a screenshot from those
+Note that this program will take a screenshot of that place multiple times, so don't move that window for the remainder of the time
+ 
 
 ## Data
 
