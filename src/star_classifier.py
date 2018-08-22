@@ -2,7 +2,7 @@
 
 @author: Gerardo Cervantes
 """
-#First star counter appearance is 50.12 seconds into the run (English version of Mario 64 NSTC)
+#First star counter appearance is 49.27 seconds into the run (English version of Mario 64 NSTC)
 
 import numpy as np
 
