@@ -25,7 +25,7 @@ Requirements:
 
 ## High level function
 
-\__init__.py - starts the program
+\_\_init__.py - starts the program
 
 
 ## How to use
@@ -67,9 +67,64 @@ Take a screenshot from a high quality version of your game.  You can make amarec
 
 This program takes screenshots of that place multiple times, so don't move that window or put other windows over it
  
+
+ 
 #### Example image
 
 ![Example image cropped at the star counter ](images/star_counter_example.png) 
+
+
+ ## Creating a route
+
+Routes end with the .route extension and are all located in the routes directory
+
+To edit one you open it with notepad or notepad++ to make changes to it
+
+Route files use the JSON format so make sure to keep the JSON format or it might result in some errors
+
+
+* name:  This is the name of your route
+
+* fadeout_splits: This contains star numbers you want split in fadeouts
+
+* fadeout_amount: This is how many fadeouts you want to split after the corresponding fadeout_split
+
+* immediate_splits: If you want to split at the same time you get a star you add it here
+
+* starting_star_number: Star number you are starting with
+
+
+The first item in fadeout_splits corresponds to the first item in fadeout_amount
+
+The second item in fadeout_splits corresponds to the second item in fadeout_amount
+
+etc.
+
+
+So the amount of items in fadeout_splits and and fadeout_amounts should be the same because they are aligned
+
+### Example:
+
+Let's say we want to split in star 10's fadeout and after you get a bowser key. 
+ 
+After you get star 10 you want to split after the first fadeout, so you add a fadeout_split at 10 and make the fadeout_amount for that 1
+
+
+For splitting at bowser key:
+After getting star 13, there is 1 fadeout that occurs after you go down the bowser pipe, and after you beat bowser and get the key there is another fadeout that occurs and this is where you want to split.
+
+So you make the fadeout_amount 2 for star 13 because it's the 2nd fadeout after you get star 13.
+
+
+
+...
+
+"fadeout_splits": [10, 13], 
+
+"fadeout_amounts": [1, 2]
+
+...
+ 
 
 ## Data used for training
 
