@@ -25,7 +25,7 @@ Requirements:
 
 ## High level function
 
-__init__.py - starts the program
+\__init__.py - starts the program
 
 
 ## How to use
@@ -35,14 +35,16 @@ __init__.py - starts the program
 ![Image of GUI main menu](images/MainMenu.png) 
 
 
-You select the route you want to use from the dropdown.  Add custom routes by adding them to the routes directory.
+You select the route you want to use from the dropdown 
+
+Add custom routes by adding them to the routes directory
 
 
 ### Key setup
 
 ![Image of GUI key setup window ](images/Keysetup.png) 
 
-You put the key that you use to split on LiveSplit here
+The key you use to split on LiveSplit goes here
 
 There are the keys you can use to split:
 
@@ -57,10 +59,10 @@ https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.sendkeys?redire
 Click preview to take a screenshot at the coordinates
 
 
-You want to set coordinates to be the star counter in your game
+You want the coordinates to be the star counter in your game
 
 
-A width to height ratio of 1.675 is the best but not necessary, the best thing to do is to have a high quality version of your game.  You can make amarec or OBS bigger and have it take a screenshot from there
+Take a screenshot from a high quality version of your game.  You can make amarec or OBS bigger and have it take a screenshot from there. A width to height ratio of 1.675 is best (not necessary) 
 
 
 This program takes screenshots of that place multiple times, so don't move that window or put other windows over it
