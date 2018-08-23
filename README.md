@@ -30,40 +30,46 @@ __init__.py - starts the program
 
 ## How to use
 
+### Main menu
+
 ![Image of GUI main menu](images/MainMenu.png) 
 
-This is the main menu
 
-The top shows the route you are running.  Create custom routes by adding them to the routes directory.
+You select the route you want to use from the dropdown.  Add custom routes by adding them to the routes directory.
 
-### Setup
 
-#### Key setups
+### Key setup
 
 ![Image of GUI key setup window ](images/Keysetup.png) 
 
-This is the key setup window 
+You put the key that you use to split on LiveSplit here
 
-You put the key that you use to split in on LiveSplit here
+There are the keys you can use to split:
 
-There are the keys you can use to split.
+
 https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.sendkeys?redirectedfrom=MSDN&view=netframework-4.7.2
 
 
-#### Coordinates
+### Coordinates setup
 
 ![Image of GUI coordinates window ](images/Coordinates.png) 
 
-Clicking the coordinates button, this window will pop up.
+Click preview to take a screenshot at the coordinates
 
 
-The coordiantes will screenshot the game, and you can click preview to see where the coordinates are.
-You want to set coordainates to be the star counter in your game, preferably to the highest quality you have
-A width to height ratio of 1.675 is the best but not necessary, the best thing to do is to have a high quality version of your game, by making amarec or OBS bigger and taking a screenshot from those
-Note that this program will take a screenshot of that place multiple times, so don't move that window for the remainder of the time
+You want to set coordinates to be the star counter in your game
+
+
+A width to height ratio of 1.675 is the best but not necessary, the best thing to do is to have a high quality version of your game.  You can make amarec or OBS bigger and have it take a screenshot from there
+
+
+This program takes screenshots of that place multiple times, so don't move that window or put other windows over it
  
+#### Example image
 
-## Data
+![Example image cropped at the star counter ](images/star_counter_example.png) 
+
+## Data used for training
 
 
 ### Data Information
