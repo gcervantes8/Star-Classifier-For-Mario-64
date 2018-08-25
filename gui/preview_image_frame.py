@@ -21,14 +21,12 @@ class PreviewImageFrame(tk.Frame):
     x_entry = None
     y_entry = None
     width_entry = None
-    height_entry = None
      
     screenshot_instance = None
     
     x_stringvar = None
     y_stringvar = None
     width_stringvar = None
-    height_stringvar = None
     
     DEFAULT_IMAGE_PATH = 'images/generated_preview_1.jpeg'
     
@@ -76,8 +74,6 @@ class PreviewImageFrame(tk.Frame):
             self.y_stringvar.set(str(y))
         if width != None:
             self.width_stringvar.set(str(width))
-        if height != None:
-            self.height_stringvar.set(str(height))
         
 
     def set_bg_color(self, bg_color):
@@ -86,35 +82,36 @@ class PreviewImageFrame(tk.Frame):
         self.x_frame.configure(background = bg_color)
         self.y_frame.configure(background = bg_color)
         self.width_frame.configure(background = bg_color)
-        self.height_frame.configure(background = bg_color)
         
         self.x_label.configure(background = bg_color)
         self.y_label.configure(background = bg_color)
         self.width_label.configure(background = bg_color)
-        self.height_label.configure(background = bg_color)
     
     def create_set_sizes_frame(self, master):
         set_sizes_frame = tk.Frame(master)
         
         self.x_frame, self.x_label, self.x_entry, self.x_stringvar = self.create_label_entry_pair(set_sizes_frame, 'x')
         self.y_frame, self.y_label, self.y_entry, self.y_stringvar = self.create_label_entry_pair(set_sizes_frame, 'y')
-        self.width_frame, self.width_label, self.width_entry, self.width_stringvar = self.create_label_entry_pair(set_sizes_frame, 'width')
-        self.height_frame, self.height_label, self.height_entry, self.height_stringvar = self.create_label_entry_pair(set_sizes_frame, 'height')
+        self.width_frame, self.width_label, self.width_entry, self.width_stringvar = self.create_label_entry_pair(set_sizes_frame, 'size')
         
         padx = 7
         pady = 8
         self.x_frame.grid(column = 0, row = 0, padx = padx, pady = pady)
         self.y_frame.grid(column = 1, row = 0, padx = padx, pady = pady)
         self.width_frame.grid(column = 2, row = 0, padx = padx, pady = pady)
-        self.height_frame.grid(column = 3, row = 0, padx = padx, pady = pady)
         
         return set_sizes_frame
     
     def clear_entries(self):
-        self.x_entry.delete(0, 'end')
-        self.y_entry.delete(0, 'end')
-        self.width_entry.delete(0, 'end')
-        self.height_entry.delete(0, 'end')
+        self.clear_entry(self.x_entry)
+        self.clear_entry(self.y_entry)
+        self.clear_entry(self.width_entry)
+        
+    def clear_entry(self, tk_entry):
+        try:
+            self.tk_entry.delete(0, 'end')
+        except:
+            pass
         
     #Returns tuple with 3 items, tk.frame containing the tk.label and tk.entry, the tk.label, and the tk.entry
     def create_label_entry_pair(self, master, label_text):
@@ -129,17 +126,40 @@ class PreviewImageFrame(tk.Frame):
         
         return label_entry_frame, label, entry, stringvar
         
+    def get_entry_item(self, tk_stringvar):
+        try:
+            return tk_stringvar.get()
+        except:
+            return ''
+    
+    
+    #Returns 4-tuple of integers (x,y,with, height)
+    #Returns -1 for any integer if it wasn't an integer
     def get_coordinates(self):
-        x_entry_text = self.x_stringvar.get()
-        y_entry_text = self.y_stringvar.get()
-        width_entry_text = self.width_stringvar.get()
-        height_entry_text = self.height_stringvar.get()
+        x_entry_text = self.get_entry_item(self.x_stringvar)
         
-        return x_entry_text, y_entry_text, width_entry_text, height_entry_text
+        y_entry_text = self.get_entry_item(self.y_stringvar)
+        width_entry_text = self.get_entry_item(self.width_stringvar)
+        width_int = self.str_to_int(width_entry_text)
+        if width_int == -1:
+            height_int = -1
+        else:
+            height_int = width_int/1.675 #1.675 is the ratio we are using for resizing
+        
+        return self.str_to_int(x_entry_text), self.str_to_int(y_entry_text), width_int, height_int
+    
+    def str_to_int(self, string):
+        if self.is_integer(string):
+            return int(string)
+        return -1
+        
     
     def are_invalid_coordinates(self, x, y, width, height): 
-        return not (self.is_integer(x) and self.is_integer(y) and self.is_integer(width) and self.is_integer(height))
+        return not (self.is_valid_coordinate(x) and self.is_valid_coordinate(y) and self.is_valid_coordinate(width) and self.is_valid_coordinate(height))
     
+    def is_valid_coordinate(self, item):
+        return self.is_integer(item) and item >= 0 
+        
     def is_integer(self, var):
         try:
             int(var)
