@@ -6,7 +6,7 @@
 
 import tkinter as tk
 from PIL import ImageTk, Image
-
+import pyautogui
 
 #Module in src folder that takes screenshots
 from sys import path
@@ -46,7 +46,12 @@ class PreviewImageFrame(tk.Frame):
         preview_button.grid(column = 0, row = 2, padx = 1, pady = 5)
         preview_button.config(command = self.preview_button_clicked)
         
-
+        self.mouse_coord_stringvar = tk.StringVar()
+        mouse_coord_label = tk.Label(self, textvariable = self.mouse_coord_stringvar)
+        mouse_coord_label.grid(column = 0, row = 3, padx = 1, pady = 5)
+        
+        self.poll_mouse_coordinates()
+        
     def create_preview_image(self, master):
         
         self.photo_image_label = tk.Label(master)
@@ -75,7 +80,13 @@ class PreviewImageFrame(tk.Frame):
         if width != None:
             self.width_stringvar.set(str(width))
         
-
+    def poll_mouse_coordinates(self):
+        x, y = pyautogui.position()
+        coords = 'Mouse cooordinates: ' + str(x) + ', ' +  str(y)
+        self.mouse_coord_stringvar.set(coords)
+        self.after(100, self.poll_mouse_coordinates)
+        
+        
     def set_bg_color(self, bg_color):
         self.configure(background = bg_color)
         self.set_sizes_frame.configure(background = bg_color)
