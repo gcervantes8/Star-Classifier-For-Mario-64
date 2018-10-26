@@ -2,6 +2,8 @@
 
 import numpy as np
 
+path.insert(0, '../')
+
 #Keras Library for neural networks
 from keras.models import Sequential, load_model
 from keras.layers import Dense, Flatten, Dropout
@@ -107,22 +109,34 @@ def classifyMarioStar(x_train, y_train, x_test, y_test, save_model_name):
 
 
 if __name__ == "__main__":
-    main_path = r'E:\Mario_64_images/'
-    n_imgs = 205
+    train_images_path = r'E:\MarioStarClassifier\train_images'
+    test_images_path = r'E:\MarioStarClassifier\Mario_64_train_images' #None if you want to split images from train between train and test
+    n_imgs = 300
     test_train_split = 0.15
+    
     save_model_name = '../models/Model' + n_imgs
-    x_train, y_train = get_images(main_path, n_imgs)
+    x_train, y_train = get_images(train_images_path, n_imgs)
     print('Done storing the images')
     print('Converting to numpy lists')
     x_train = np.array(x_train).astype(np.float32)
     y_train = np.array(y_train).astype(np.int32)
-    print('Done to converting to numpy float32')
-    
+    print('Done to converting train to numpy float32')
     
     x_train, y_train = unison_shuffled_copies(x_train, y_train)
-    print('Done shuffling')
-    #Splits training data to test and train data
-    x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size = test_train_split) 
+    print('Done shuffling train')
+    
+    if test_images_path != None:
+        x_test, y_test = get_images(test_images_path, n_imgs)
+        
+        x_test = np.array(x_test).astype(np.float32)
+        y_test = np.array(y_test).astype(np.int32)
+        print('Done to converting test to numpy float32')
+        x_test, y_test = unison_shuffled_copies(x_test, y_test)
+        print('Done shuffling test')
+    else:
+        #Splits training data to test and train data
+        x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size = test_train_split) 
+    
     classifyMarioStar(x_train, y_train, x_test, y_test, save_model_name)
 
 
