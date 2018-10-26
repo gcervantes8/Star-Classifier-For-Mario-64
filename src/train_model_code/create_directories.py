@@ -30,11 +30,18 @@ def create_subdirectory(directory_path, dir_name):
         try:
             int(folder_name)
         except ValueError:
-            print('Folder name with images should be the star number,'
-                + ' no images taken from folder named: ' + folder_name)
-            continue;
-        
+            print('Directory structure did not match, folders have incorrect names')
+            continue
+            
         create_directory = directory[0] + '/' + dir_name
         if not os.path.exists(create_directory):
             os.makedirs(create_directory)
             
+if __name__ == "__main__":
+    
+    #This will prepare the directory for training by adding directories
+    path_to_prepare = r'E:\MarioStarClassifier\test_images'
+    stars = 120
+    create_main_directory(path_to_prepare, stars)
+    create_subdirectory(path_to_prepare, 'ZDez_120_1-46-19')
+
