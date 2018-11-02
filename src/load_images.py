@@ -12,14 +12,14 @@ import numpy as np
 
 from random import sample
 
-#directory_path is the one described in the readme, images and star label will be gotten from this directory
+#directory_paths a list of paths to main directories like the one described in the readme, images and labels are taken from these directories
 #Addtionally it will generate images from preexisting images, this is done to help with robustness of nn
 #images_per_star is the max amount of images it will take from each star
 #Returns list of images to be used for training, and the labels in np array of size (samples, # of stars)
-def get_images(directory_path, images_per_star, is_full_game_screenshot):
+def get_images(directory_paths, images_per_star, is_full_game_screenshot):
     
     from preprocess import preprocess_images
-    paths, y_train = get_image_paths(directory_path, images_per_star)
+    paths, y_train = get_image_paths(directory_paths, images_per_star)
 
     #List of pil_images
     images = pil_images_from_paths(paths, is_full_game_screenshot)
@@ -66,26 +66,29 @@ def open_image(path):
 #From the main directory path described in the readme
 #images_per_star is the max amount of images it will take for each star label
 #returns a tuple of (paths, 1-hot represenation np arrays)
-def get_image_paths(directory_path, images_per_star):
+def get_image_paths(directory_paths, images_per_star):
     
     paths = []
     star_numbers = []
-    subdirectory_paths = glob(directory_path +'/*/')
+    subdirectory_paths = glob(directory_paths[0] +'/*/') #Uses first main directory path to find how many star directories there are
     from os import path
     for star_directory in subdirectory_paths:
         
-        dir_name = path.basename(path.dirname(star_directory))
+        star_dir_name = path.basename(path.dirname(star_directory))
         
         try:
-            star_number = int(dir_name)
+            star_number = int(star_dir_name)
         except ValueError:
             print('Folder name with images should be the star number,'
-                + ' no images taken from folder named: ' + dir_name)
+                + ' no images taken from folder named: ' + star_dir_name)
             continue;
         
         print(star_number)
+        star_directories = [path.join(main_paths, star_dir_name) for main_paths in directory_paths]
+            
+        
         #Retrieves all images from subdirectory
-        image_paths = get_images_from_star_directory(star_directory, images_per_star)
+        image_paths = get_images_from_star_directory(star_directories, images_per_star)
         
         n_paths = np.size(image_paths, axis = 0)
         
@@ -98,8 +101,12 @@ def get_image_paths(directory_path, images_per_star):
 #Unless there aren't enough imgs in that subdirectory, 
 #if that's the case, then it will take all from that subdirectory and end up taking more from the others    
 #Returns paths of images, number of paths returns is equal to image_amount unless there wasn't enough images in star directory.
-def get_images_from_star_directory(star_directory_path, image_amount):
-    image_directories = glob(star_directory_path +'/*/')
+def get_images_from_star_directory(star_directory_paths, image_amount):
+    image_directories = []
+    
+    for star_path in star_directory_paths:
+        img_dir = glob(star_path +'/*/')
+        image_directories = image_directories + img_dir
     
     #Contains a list for each subdirectory and each of those lists contains image paths for all imgs in the subdirectory
     directory_image_paths = []

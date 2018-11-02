@@ -2,6 +2,8 @@
 
 import numpy as np
 
+#Module in src folder to load images
+from sys import path
 path.insert(0, '../')
 
 #Keras Library for neural networks
@@ -110,12 +112,14 @@ def classifyMarioStar(x_train, y_train, x_test, y_test, save_model_name):
 
 if __name__ == "__main__":
     train_images_path = r'E:\MarioStarClassifier\train_images'
-    test_images_path = r'E:\MarioStarClassifier\Mario_64_train_images' #None if you want to split images from train between train and test
-    n_imgs = 300
-    test_train_split = 0.15
+    test_images_path = r'E:\MarioStarClassifier\test_images' #None if you want to split images from train between train and test
     
-    save_model_name = '../models/Model' + n_imgs
-    x_train, y_train = get_images(train_images_path, n_imgs)
+    test_train_split = 0.15
+    n_train_imgs = 151
+    n_test_imgs = n_train_imgs * test_train_split
+    
+    save_model_name = 'models/Model' + str(n_train_imgs)
+    x_train, y_train = get_images([train_images_path], n_train_imgs, True)
     print('Done storing the images')
     print('Converting to numpy lists')
     x_train = np.array(x_train).astype(np.float32)
@@ -126,7 +130,7 @@ if __name__ == "__main__":
     print('Done shuffling train')
     
     if test_images_path != None:
-        x_test, y_test = get_images(test_images_path, n_imgs)
+        x_test, y_test = get_images([test_images_path], n_test_imgs, True)
         
         x_test = np.array(x_test).astype(np.float32)
         y_test = np.array(y_test).astype(np.int32)
