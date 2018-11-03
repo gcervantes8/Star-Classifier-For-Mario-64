@@ -19,23 +19,31 @@ from random import sample
 def get_images(directory_paths, images_per_star, is_full_game_screenshot):
     
     from preprocess import preprocess_images
-    paths, y_train = get_image_paths(directory_paths, images_per_star)
-
+    paths, labels = get_image_paths(directory_paths, images_per_star)
+    print('Got paths')
     #List of pil_images
     images = pil_images_from_paths(paths, is_full_game_screenshot)
     
-    
+    print('Got pil images')
     from keras.preprocessing.image import img_to_array
     #Returns images as numpy array of size (n_images, width, height)
-    images = np.array([img_to_array(image) for image in images])
-#    
+    images = [img_to_array(image) for image in images]
+    
+    print('Converted to arrays')
+    images = np.array(images).astype(np.float32)
+    print('To numpy')
     #Returns images as numpy array of size (n_images, width, height) with preprocessed images added to it
-    images, y_train = preprocess_images(images, y_train)
+    images, labels = preprocess_images(images, labels)
+    print('Preprocessed images')
+    #Turns to numpy array and changes range from 0 to 1
+    images = np.array(images).astype(np.float32)/255
+    labels = np.array(labels).astype(np.int16)
+    print('To floats and ints')
     
     #Changes range from 0 to 1 or numpy array
-    images = np.array([(image/255) for image in images])
+#    images = np.array([(image/255) for image in images])
     
-    return images, y_train
+    return images, labels
     
 #Converts pil images to numpy array
 #rgb colors scaled down to floats between 0 to 1 instead of 0 to 255
@@ -174,10 +182,34 @@ def one_hot_representation(star_numbers, size):
     one_hot[np.arange(n_samples), star_numbers] = 1
     return one_hot
     
+def crop_images_from_dir(images_directory, output_directory):
+    image_paths = get_images_from_dir(images_directory)
+    pil_images = [open_image(path) for path in image_paths]
+    pil_img = pil_images[0]
+    img_width, img_height = pil_img.size[0], pil_img.size[1]
+    pil_images = [img.crop((10, 11, img_width-9, img_height-11)) for img in pil_images]
+    
+    for i, img in enumerate(pil_images):
+        img.save(output_directory + '/' + str(i) + '.png')
+    
+    return pil_images
 if __name__ == "__main__":
     #Module in src folder to load images
-    from sys import path
-    path.insert(0, 'train_model_code')
-    #For debugging to be able to look at images produced
-    images, y = get_images(r'E:\MarioStarClassifier\train_images', 2, True)
+#    from sys import path
+#    path.insert(0, 'train_model_code')
+#    #For debugging to be able to look at images produced
+#    images, y = get_images(r'E:\MarioStarClassifier\train_images', 2, True)
+    
+    from os import path
+    images_directory = 'E:/MarioStarClassifier/batora13953'
+    output_directory = path.join(images_directory, 'cropped')
+    
+    #To preview
+#    image_paths = get_images_from_dir(images_directory)
+#    pil_images = [open_image(path) for path in image_paths]
+
+    pil_images = crop_images_from_dir(images_directory, output_directory)
+    
+    
+    
     
