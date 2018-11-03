@@ -2,6 +2,12 @@
 
 Uses images recognition to classify how many stars you have in Super Mario 64
 
+## Release
+
+Latest release can be found [here](https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/releases) Version 0.9
+
+
+
 ## Benefits
 
 
