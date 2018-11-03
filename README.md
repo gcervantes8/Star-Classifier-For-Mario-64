@@ -1,6 +1,6 @@
-# Star-Classifier-For-Mario-64
+# Star Classifier For Mario 64
 
-Classifies how many stars you have in Super Mario 64 using images
+Uses images recognition to classify how many stars you have in Super Mario 64
 
 ## Benefits
 
@@ -37,7 +37,7 @@ Requirements:
 
 You select the route you want to use from the dropdown 
 
-Add custom routes by adding them to the routes directory
+Custom routes can be added by adding the .route file in the routes directory
 
 
 ### Key setup
@@ -46,26 +46,23 @@ Add custom routes by adding them to the routes directory
 
 The key you use to split on LiveSplit goes here
 
-There are the keys you can use to split:
-
-
-https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.sendkeys?redirectedfrom=MSDN&view=netframework-4.7.2
+Keys used for splitting:  https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.sendkeys?redirectedfrom=MSDN&view=netframework-4.7.2
 
 
 ### Coordinates setup
 
 ![Image of GUI coordinates window ](images/Coordinates.png) 
 
-Click preview to take a screenshot at the coordinates
+Preview button takes a screenshot at the coordinates
 
 
 You want the coordinates to be the star counter in your game
 
 
-Take a screenshot from a high quality version of your game.  You can make amarec or OBS bigger and have it take a screenshot from there. A width to height ratio of 1.675 is best (not necessary) 
+Take a screenshot from a high quality version of your game.  Making amarec or OBS bigger can help improve the quality of the image which can help in the recognition.  
 
 
-This program takes screenshots of that place multiple times, so don't move that window or put other windows over it
+This program takes screenshots at the coordinates given multiple times, so don't move that window or put other windows over it
  
 
  
@@ -78,9 +75,9 @@ This program takes screenshots of that place multiple times, so don't move that 
 
 Routes end with the .route extension and are all located in the routes directory
 
-To edit one you open it with notepad or notepad++ to make changes to it
+Routes are editable by opening them with notepad, notepad++, or any other text editing program
 
-Route files use the JSON format so make sure to keep the JSON format or it might result in some errors
+Route files use the JSON format so make sure to keep the JSON format or it might result in errors
 
 
 * name:  This is the name of your route
@@ -101,7 +98,7 @@ The second item in fadeout_splits corresponds to the second item in fadeout_amou
 etc.
 
 
-So the amount of items in fadeout_splits and and fadeout_amounts should be the same because they are aligned
+So the amount of numbers in fadeout_splits and fadeout_amounts should be the same because they are aligned
 
 ### Example:
 
@@ -115,8 +112,7 @@ After getting star 13, there is 1 fadeout that occurs after you go down the bows
 
 So you make the fadeout_amount 2 for star 13 because it's the 2nd fadeout after you get star 13.
 
-
-
+```
 ...
 
 "fadeout_splits": [10, 13], 
@@ -124,7 +120,7 @@ So you make the fadeout_amount 2 for star 13 because it's the 2nd fadeout after 
 "fadeout_amounts": [1, 2]
 
 ...
- 
+```
 
 ## Data used for training
 
