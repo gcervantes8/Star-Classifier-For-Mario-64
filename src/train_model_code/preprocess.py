@@ -52,8 +52,8 @@ def mario_image_generator():
     from keras.preprocessing.image import ImageDataGenerator
     image_gen = ImageDataGenerator(
         rotation_range = 0,
-        width_shift_range = 0.05,
-        height_shift_range = 0.1,
+        width_shift_range = 0, #Previous value: 0.05
+        height_shift_range = 0, #Previous value: 0.1
         channel_shift_range = 25,
         zoom_range = 0.05,
         horizontal_flip = False,
