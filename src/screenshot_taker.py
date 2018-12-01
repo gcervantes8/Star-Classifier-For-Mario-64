@@ -19,13 +19,13 @@ class ScreenshotTaker():
     
     #Top and left are coordinates of the top-left of the window where you want the screenshot
     #Returns 2-tuple of the Pil image and time it took to make screenshot: (img, screenshot_time)
-    def screenshot_mss(self, top, left, width, height):
+    def screenshot_mss(self, x, y, width, height):
         start_time = time.time()
         if self.sct == None:
             self.sct = mss()
         
         # The screen part to capture
-        monitor = {'top': top, 'left': left, 'width': width, 'height': height}
+        monitor = {'top': y, 'left': x, 'width': width, 'height': height}
     
         # Grab the data
         sct_img = self.sct.grab(monitor)

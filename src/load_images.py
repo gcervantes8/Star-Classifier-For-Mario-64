@@ -18,11 +18,12 @@ from random import sample
 #Returns list of images to be used for training, and the labels in np array of size (samples, # of stars)
 def get_images(directory_paths, images_per_star, is_full_game_screenshot):
     
-    from preprocess import preprocess_images
+    from preprocess import preview_images, no_modifications_generator
     paths, labels = get_image_paths(directory_paths, images_per_star)
     print('Got paths')
+    preprocess_images = False
     #List of pil_images
-    images = pil_images_from_paths(paths, is_full_game_screenshot)
+    images = pil_images_from_paths(paths, is_full_game_screenshot, preprocess_images)
     
     print('Got pil images')
     from keras.preprocessing.image import img_to_array
@@ -33,15 +34,13 @@ def get_images(directory_paths, images_per_star, is_full_game_screenshot):
     images = np.array(images).astype(np.float32)
     print('To numpy')
     #Returns images as numpy array of size (n_images, width, height) with preprocessed images added to it
-    images, labels = preprocess_images(images, labels)
-    print('Preprocessed images')
+    preview_images(no_modifications_generator(), images, 50)
+#    images, labels = preprocess_images(images, labels)
+#    print('Preprocessed images')
     #Turns to numpy array and changes range from 0 to 1
     images = np.array(images).astype(np.float32)/255
     labels = np.array(labels).astype(np.int16)
-    print('To floats and ints')
-    
-    #Changes range from 0 to 1 or numpy array
-#    images = np.array([(image/255) for image in images])
+    print('Images to floats and labels to ints')
     
     return images, labels
     
@@ -51,14 +50,13 @@ def pil_imgs_to_numpy(pil_imgs):
     from keras.preprocessing.image import img_to_array
     np_images = [(img_to_array(image)/255) for image in pil_imgs]
     
-    return np.array(np_images)
+    return np.array(np_images).astype(np.float32)
     
 #From a list of paths, returns a list of pil images
 #pil images are resized to contain only the star number of the game image.
-def pil_images_from_paths(paths, is_full_game_screenshot):
+def pil_images_from_paths(paths, is_full_game_screenshot, preprocess_images):
     
-    pil_images = [crop_and_resize_image(open_image(path), is_full_game_screenshot, True) for path in paths]
-    return pil_images
+    return [crop_and_resize_image(open_image(path), is_full_game_screenshot, preprocess_images) for path in paths]
 
 
 #Parameter is a path to the image, and returns the PIL_image in that path
@@ -119,7 +117,7 @@ def get_images_from_star_directory(star_directory_paths, image_amount):
     #Contains a list for each subdirectory and each of those lists contains image paths for all imgs in the subdirectory
     directory_image_paths = []
     for img_dir_path in image_directories:
-        directory_image_paths.append(get_images_from_dir(img_dir_path))
+        directory_image_paths.append(get_images_from_dir(img_dir_path, False))
         
     #Sorts the directories by amount
     dir_image_lengths = [len(image_paths) for image_paths in directory_image_paths]
@@ -148,11 +146,14 @@ def get_images_from_star_directory(star_directory_paths, image_amount):
 
 
 #Returns paths to all the images from the directory given
-def get_images_from_dir(directory_path):
+def get_images_from_dir(directory_path, recursive):
     extensions = ['png', 'jpg']
     image_paths = []
     for extension in extensions:
-        image_paths += glob(directory_path + '/' + '*.' + extension)
+        if recursive:
+            image_paths += glob(directory_path + '/**/*.' + extension, recursive = recursive)
+        else:
+            image_paths += glob(directory_path + '/' + '*.' + extension, recursive = recursive)
     return image_paths
     
 #Crops and resizes pil images from images of the whole game to images of the 
@@ -163,14 +164,19 @@ def crop_and_resize_image(pil_img, is_full_game_screenshot, preprocess):
 
     if is_full_game_screenshot: 
         pil_img = pil_img.resize((452, 345), Image.ANTIALIAS) #Width,height
-        img_width, img_height = pil_img.size[0], pil_img.size[1]
-        x, y, w, h = 375, 0, img_width-5, img_height-300
-        size_modifier = randint(-4, 4) #If positive makes screen grab bigger, negative makes it smaller
+        img_width = pil_img.size[0]
+        
+        x, y = 380, 1
+        size = img_width - 2 - x
+        w, h = size + x, round(size/1.675) + y
+        
+        size_modifier = 0
         if preprocess:
-            x_modifier = randint(-6, 1)
-            y_modifier = randint(0, 5)
+            size_modifier = randint(-1, 1) #If positive makes screen grab bigger, negative makes it smaller
+            x_modifier = randint(-1, 1)
+            y_modifier = randint(0, 1)
             x += x_modifier
-            w -= x_modifier #Don't want it to be less than 0 because then it will get pixels outside the image
+            w -= x_modifier
             y += y_modifier
             h -= y_modifier
             
@@ -197,16 +203,17 @@ def one_hot_representation(star_numbers, size):
     return one_hot
     
 def crop_images_from_dir(images_directory, output_directory):
-    image_paths = get_images_from_dir(images_directory)
-    pil_images = [open_image(path) for path in image_paths]
-    pil_img = pil_images[0]
-    img_width, img_height = pil_img.size[0], pil_img.size[1]
-    pil_images = [img.crop((10, 11, img_width-9, img_height-11)) for img in pil_images]
-    
-    for i, img in enumerate(pil_images):
-        img.save(output_directory + '/' + str(i) + '.png')
-    
-    return pil_images
+    image_paths = get_images_from_dir(images_directory, True)
+    for i, path in enumerate(image_paths):
+        pil_img = open_image(path)
+        img_width, img_height = pil_img.size[0], pil_img.size[1]
+#    pil_images = [img.crop((10, 10, img_width-9, img_height-11)) for img in pil_images]
+        pil_img = pil_img.crop((2, 0, img_width-2, img_height))
+        if output_directory != None:
+            pil_img.save(output_directory + '/' + str(i) + '.png')
+        else:
+            pil_img.save(path)
+            
 if __name__ == "__main__":
     #Module in src folder to load images
 #    from sys import path
@@ -214,15 +221,15 @@ if __name__ == "__main__":
 #    #For debugging to be able to look at images produced
 #    images, y = get_images(r'E:\MarioStarClassifier\train_images', 2, True)
     
-    from os import path
-    images_directory = 'E:/MarioStarClassifier/batora13953'
-    output_directory = path.join(images_directory, 'cropped')
+    import os
+    images_directory = 'E:/MarioStarClassifier/caivs15818'
+#    output_directory = os.path.join(images_directory, 'cropped')
     
     #To preview
-#    image_paths = get_images_from_dir(images_directory)
+#    image_paths = get_images_from_dir(images_directory, False)
 #    pil_images = [open_image(path) for path in image_paths]
 
-    pil_images = crop_images_from_dir(images_directory, output_directory)
+    crop_images_from_dir(images_directory, None)
     
     
     
