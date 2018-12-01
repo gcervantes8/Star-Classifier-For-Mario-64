@@ -4,7 +4,7 @@ Uses images recognition to classify how many stars you have in Super Mario 64
 
 ## Release
 
-Latest release can be found [here](https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/releases) Version 0.9
+Latest release can be found [here](https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/releases) version 0.95
 
 
 
@@ -72,9 +72,11 @@ This program takes screenshots at the coordinates given multiple times, so don't
  
 
  
-#### Example image
+#### Example images
 
-![Example image cropped at the star counter ](images/star_counter_example.png) 
+![Example image cropped at the star counter ](images/one_digit.png) 
+![Example image cropped at the star counter ](images/two_digit.png) 
+![Example image cropped at the star counter ](images/three_digit.png)
 
 
  ## Creating a route
@@ -108,15 +110,15 @@ So the amount of numbers in fadeout_splits and fadeout_amounts should be the sam
 
 ### Example:
 
-Let's say we want to split in star 10's fadeout and after you get a bowser key. 
+Let's say we want to split in star 10's fadeout. 
  
-After you get star 10 you want to split after the first fadeout, so you add a fadeout_split at 10 and make the fadeout_amount for that 1
+You add a fadeout_split at 10 and make the fadeout_amount for that 1.
 
 
-For splitting at bowser key:
+To add a split in the fadeout after getting the 1st bowser key you would add star 13 to fadeout_splits and make add 2 to fadeout_amounts.
+You make the fadeout_amount 2 for star 13 because it's the 2nd fadeout after you get star 13.
 After getting star 13, there is 1 fadeout that occurs after you go down the bowser pipe, and after you beat bowser and get the key there is another fadeout that occurs and this is where you want to split.
-
-So you make the fadeout_amount 2 for star 13 because it's the 2nd fadeout after you get star 13.
+ 
 
 ```
 ...
