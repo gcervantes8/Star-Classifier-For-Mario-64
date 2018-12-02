@@ -139,7 +139,6 @@ class StarClassifier():
                     is_in_black_fadeout, star_predict_time = self.img_is_in_blackfadeout(pil_img)
                     if is_in_black_fadeout:
                         star_black_fadeouts_found += 1
-                        print('black_fadeouts:', star_black_fadeouts_found)
                         if star_black_fadeouts_found in star_black_fadeouts:
                             self.split_in_new_thread(split_key, 0.45)
                             star_black_fadeouts.remove(star_black_fadeouts_found)
@@ -150,7 +149,6 @@ class StarClassifier():
                     is_in_white_fadeout, star_predict_time = self.img_is_in_whitefadeout(pil_img)
                     if is_in_white_fadeout:
                         star_white_fadeouts_found += 1
-                        print('white_fadeouts:', star_white_fadeouts_found)
                         if star_white_fadeouts_found in star_white_fadeouts:
                             self.split_in_new_thread(split_key, 0.08)
                             star_white_fadeouts.remove(star_white_fadeouts_found)
@@ -159,20 +157,13 @@ class StarClassifier():
                     
             else:
                 prediction, prediction_prob, star_predict_time = self.predict_star_number_from_screenshot(pil_img, model)
-                print('Prediction')
-                print(prediction)
-                print(prediction_prob)
-                print(star_predict_time)
                 #Returns immediate_split, fade_out_split, or don't split
                 grabbed_next_star = self.check_model_output(current_star_number, prediction, prediction_prob, probability_threshold)
-                print(grabbed_next_star)
                 if grabbed_next_star:
                     
                     #Moves onto next star because they grabbed another star
                     current_star_number += 1
                     is_immediate_split, is_fadeout_split, star_black_fadeouts, star_white_fadeouts = self.decide_split(current_star_number, route)
-                    print('num_black_fadeouts:', star_black_fadeouts)
-                    print('num_white_fadeouts:', star_white_fadeouts)
                     star_black_fadeouts_found, star_white_fadeouts_found = 0, 0
                     if is_immediate_split:
                         self.split_in_new_thread(split_key, 0)
