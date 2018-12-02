@@ -103,7 +103,7 @@ class StarClassifier():
         current_star_number = starting_star_number - 1
         
         #The prediction probability needs to be higher than this threshold so that we can be certain of this classification
-        probability_threshold = 0.55
+        probability_threshold = 0.4
         is_fadeout_mode = True
         #Counter is amount of times it has screenshotted and predicted
         n_predictions = 0
