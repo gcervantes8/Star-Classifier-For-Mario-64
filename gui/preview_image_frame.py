@@ -155,7 +155,7 @@ class PreviewImageFrame(tk.Frame):
         if width_int == -1:
             height_int = -1
         else:
-            height_int = width_int/1.675 #1.675 is the ratio we are using for resizing
+            height_int = round(width_int/1.675) #1.675 is the ratio we are using for resizing
         
         return self.str_to_int(x_entry_text), self.str_to_int(y_entry_text), width_int, height_int
     
@@ -185,7 +185,7 @@ class PreviewImageFrame(tk.Frame):
             print('Invalid coordinates')
             return
         
-        pil_img = self.screenshot_instance.screenshot_pil(int(x), int(y), int(width), int(height))
+        pil_img, _ = self.screenshot_instance.screenshot_mss(int(x), int(y), int(width), int(height))
         self.show_image_on_label(pil_img)
         
     #Returns coordinates when the frame is closed
