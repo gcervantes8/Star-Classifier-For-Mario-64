@@ -138,6 +138,7 @@ class StarClassifier():
                 if star_black_fadeouts != []:
                     is_in_black_fadeout, star_predict_time = self.img_is_in_blackfadeout(pil_img)
                     if is_in_black_fadeout:
+                        print('Found black fadeout')
                         star_black_fadeouts_found += 1
                         if star_black_fadeouts_found in star_black_fadeouts:
                             self.split_in_new_thread(split_key, 0.45)
@@ -150,7 +151,7 @@ class StarClassifier():
                     if is_in_white_fadeout:
                         star_white_fadeouts_found += 1
                         if star_white_fadeouts_found in star_white_fadeouts:
-                            self.split_in_new_thread(split_key, 0.08)
+                            self.split_in_new_thread(split_key, 0.15)
                             star_white_fadeouts.remove(star_white_fadeouts_found)
                         #Stop until fadeout is finished
                         time.sleep(8)
@@ -236,7 +237,7 @@ class StarClassifier():
         start_time = time.time()
         consider_gray = 0.07 #If value is lower than 0.27 consider it black/fadeout pixel (after converting img into 0 to 1)
         num_black_pixels, num_pixels = self.img_pixels_meet_threshold(star_image, consider_gray)
-        is_in_blackfadeout = num_black_pixels > num_pixels * 0.92 #If more than 92% of pixels in image are black, then say image is a fadeout image
+        is_in_blackfadeout = num_black_pixels > num_pixels * 0.98 #If more than 92% of pixels in image are black, then say image is a fadeout image
         
         star_prediction_time = time.time() - start_time
         return is_in_blackfadeout, star_prediction_time
