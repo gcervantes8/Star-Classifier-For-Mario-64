@@ -1,0 +1,14 @@
+
+There is a split when the star counter first appears
+Timer starts at approximately 49.27 if on English version
+Timer starts at approximately 46.54 if on Japanese version
+
+Split at:
+
+Bob-omb Battlefield (1)
+Whomp's Fortress (6)
+Cool Cool Mountain (8)
+Bowser in DarkWorld (9)
+Shifting Sand Land (11)
+Lethal Lava Land (12)
+Hazy Maze Cave (15)

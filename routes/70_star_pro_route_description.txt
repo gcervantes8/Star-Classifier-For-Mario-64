@@ -1,0 +1,21 @@
+
+There is a split when the star counter first appears
+Timer starts at approximately 49.27 if on English version
+Timer starts at approximately 46.54 if on Japanese version
+
+Split at:
+
+whomps fortress (10)
+Bowser in the Dark World(13)
+Cool Cool Mountain (17)
+Big Boo's Haunt (19)
+shifting sand land (24)
+lethal lava land (30)
+Dire Dire Docks(34)
+Wet Dry World (39)
+Tiny Huge Island (42)
+Tall Tall Mountain (48)
+Snowmans Land (52)
+hazy maze cave (58)
+Rainbow ride (62)
+Tick Tock Clock (69)

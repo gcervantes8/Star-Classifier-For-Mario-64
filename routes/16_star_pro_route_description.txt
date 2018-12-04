@@ -1,4 +1,10 @@
-Split at 
+
+There is a split when the star counter first appears
+Timer starts at approximately 49.27 if on English version
+Timer starts at approximately 46.54 if on Japanese version
+
+Split at:
+
 After lobby bljs (entering bitDW)
 bowser(1)
 whomps fortress (4)
