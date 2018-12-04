@@ -34,6 +34,7 @@ Requirements:
 
 \_\_init__.py - starts the program
 
+Star-Classifier.exe opens the application if you downloaded from a release
 
 ## How to use
 
