@@ -26,6 +26,7 @@ Requirements:
 * Keras library
 * MSS library
 * Pillow Library
+* pyautogui library
 * pywin32
 
 
@@ -63,9 +64,6 @@ Preview button takes a screenshot at the coordinates
 
 
 You want the coordinates to be the star counter in your game
-
-
-Take a screenshot from a high quality version of your game.  Making amarec or OBS bigger can help improve the quality of the image which can help in the recognition.  
 
 
 This program takes screenshots at the coordinates given multiple times, so don't move that window or put other windows over it
@@ -129,6 +127,15 @@ After getting star 13, there is 1 fadeout that occurs after you go down the bows
 
 ...
 ```
+
+## Debug Guide
+
+1. Make sure you don't have an application like F.lux modyfing the screenshot.  You might have to disable it while the application is running.
+2. Make sure the star number isn't being blocked by any windows over it, and can clearly be seen.
+3. Make sure the star image is being screenshotted at a good position, you should try to get the images at a very similar position to the ones in the example images section
+4. Run the application where a star is clearly visible and check if the application is giving correct prediction for that star.  If it's giving the correct prediction, it could be a problem with it trying to use an unsupported split key.  Make sure you press Stop and then Start again after every reset.  
+5. You can contact me with a screenshot of the coordinates with the preview button clicked to try and debug why it isn't working.
+
 
 ## Data used for training
 
