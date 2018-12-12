@@ -6,8 +6,8 @@ Created on Sun Aug 12 10:37:33 2018
 """
 
 import xml.etree.cElementTree as ET
-from coordinates import Coordinates
-from hotkeys import Hotkeys
+from src.coordinates import Coordinates
+from src.hotkeys import Hotkeys
 
 
 

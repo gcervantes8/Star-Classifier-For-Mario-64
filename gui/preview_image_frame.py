@@ -9,9 +9,7 @@ from PIL import ImageTk, Image
 import pyautogui
 
 #Module in src folder that takes screenshots
-from sys import path
-path.insert(0, 'src/')
-from screenshot_taker import ScreenshotTaker
+from src.screenshot_taker import ScreenshotTaker
 
 class PreviewImageFrame(tk.Frame):
     

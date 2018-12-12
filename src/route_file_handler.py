@@ -6,8 +6,8 @@ Created on Sun Aug 16
 """
 
 import json
-from route import Route
-import os
+from src.route import Route
+
 
 class RouteFileHandler():
     
@@ -38,14 +38,16 @@ class RouteFileHandler():
         
     def get_routes_from_directory(self, dir_path):
         routes = []
-        for filename in os.listdir(dir_path):
+        from os import listdir
+        from os import path
+        for filename in listdir(dir_path):
             if filename.endswith(".route"): 
-                route_file_path = os.path.join(dir_path, filename)
+                route_file_path = path.join(dir_path, filename)
                 route = self.parse_json_route(route_file_path)
                 routes.append(route)
         return routes
                 
-
+#Used to create a 70 star route file
 def route_70_star():
     file_name = '70_star_pro_route.route'
     name = '70 star - pro'

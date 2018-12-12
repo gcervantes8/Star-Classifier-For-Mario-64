@@ -5,24 +5,21 @@
 """
 
 import tkinter as tk
-from sys import path
 
-path.insert(0, 'gui')
-from preview_image_frame import PreviewImageFrame
-from progress_display_frame import ProgressDisplayFrame
-from select_route_frame import SelectRouteFrame
-from run_status_frame import RunStatusFrame
-from input_split_keys_frame import InputSplitKeys
-from start_button_frame import StartButtonFrame
+from gui.preview_image_frame import PreviewImageFrame
+from gui.progress_display_frame import ProgressDisplayFrame
+from gui.select_route_frame import SelectRouteFrame
+from gui.run_status_frame import RunStatusFrame
+from gui.input_split_keys_frame import InputSplitKeys
+from gui.start_button_frame import StartButtonFrame
 
-path.insert(0, 'src')
 from threading import Thread
 
-from star_classifier import StarClassifier
-from coordinates import Coordinates
-from hotkeys import Hotkeys
-from shared_preferences import SharedPreferences
-from route_file_handler import RouteFileHandler
+from src.star_classifier import StarClassifier
+from src.coordinates import Coordinates
+from src.hotkeys import Hotkeys
+from src.shared_preferences import SharedPreferences
+from src.route_file_handler import RouteFileHandler
 
 class MainWindow(tk.Frame):
     

@@ -7,15 +7,15 @@
 import numpy as np
 
 
-from load_images import resize_image, pil_imgs_to_numpy
+from src.load_images import resize_image, pil_imgs_to_numpy
 
 import time
 from threading import Thread
 from win32com.client import Dispatch
 from pythoncom import CoInitialize
 
-from screenshot_taker import ScreenshotTaker
-from print_progress import print_progress_information
+from src.screenshot_taker import ScreenshotTaker
+from src.print_progress import print_progress_information
 
 class StarClassifier():
     
@@ -255,4 +255,3 @@ class StarClassifier():
         
         star_prediction_time = time.time() - start_time
         return prediction, prediction_probability, star_prediction_time
-    
