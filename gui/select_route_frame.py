@@ -5,12 +5,14 @@
 """
 
 import tkinter as tk
+from tkinter.font import Font
 
 class SelectRouteFrame(tk.Frame):
     
     COLOR = '#47a3cc'
-    FONT_SIZE = 13
-    FONT = 'Helvetica '
+    FONT_SIZE = 20
+    FONT = 'Arial'
+    
     def __init__(self, master):
         self.root = master
         tk.Frame.__init__(self, master)
@@ -19,7 +21,8 @@ class SelectRouteFrame(tk.Frame):
         self.drop_down = self.create_drop_down(self, OPTIONS)
         self.drop_down.grid(column = 0, row = 0, columnspan = 2)
         self.drop_down.configure(background = self.COLOR)
-        self.drop_down.config(font=(self.FONT, self.FONT_SIZE, 'bold'))
+        self.font = Font(family = self.FONT, size = self.FONT_SIZE, weight = 'bold')
+        self.drop_down.config(font = self.font)
         
     def create_drop_down(self, master, OPTIONS):
         
@@ -43,6 +46,12 @@ class SelectRouteFrame(tk.Frame):
         
     def change_text_color(self, color):
         self.drop_down.configure(fg = color)
+        
+    def change_text_size(self, size):
+        self.font.configure(size = size)
+    
+    def change_text_font(self, font_family):
+        self.font.configure(family = font_family)
 
         
 if __name__ == "__main__":
