@@ -5,6 +5,7 @@
 """
 
 import tkinter as tk
+from tkinter.font import Font
 
 from gui.preview_image_frame import PreviewImageFrame
 from gui.progress_display_frame import ProgressDisplayFrame
@@ -34,7 +35,13 @@ class MainWindow(tk.Frame):
     icon_path = 'images/icon.png'
     routes_directory = 'routes/'
     
-    bg_color = '#47a3cc'
+    BG_COLOR = '#131926'
+    TEXT_COLOR = '#edebea'
+    FONT = 'Helvetica'
+    FONT_SIZE = 13
+    CONFIG_BUTTON_COLORS = '#0f913a'
+    DROPDOWN_COLOR = '#131926'
+    START_BUTTON_COLOR = '#ceb314'
     
     def __init__(self, master):
         tk.Frame.__init__(self, master)
@@ -43,10 +50,11 @@ class MainWindow(tk.Frame):
         self.shared_preferences = SharedPreferences()
         
         self.coordinates, route_name, self.hotkeys = self.read_preferences(self.PREFERENCES_FILE_NAME)
-        
-        master.configure(background = self.bg_color)
+        master.configure(background = self.BG_COLOR)
         self._init_preferences()
         
+        
+        self.font = Font(family = self.FONT, size = self.FONT_SIZE, weight = 'bold')
         
         #Creates frames
         self.progress_display_frame = ProgressDisplayFrame(master)
@@ -56,9 +64,23 @@ class MainWindow(tk.Frame):
         
         self.start_button.set_button_action_handler(self.start_clicked)
         
-        setup_button_colors = '#0fba00'
-        set_coordinates_popup_button = tk.Button(master, text = 'Coordinates', width = 13, command = self.popup_image_coordinates, background = setup_button_colors)
-        split_keys_popup_button = tk.Button(master, text = 'Setup keys', width = 13, command = self.popup_split_keys, background = setup_button_colors)
+        self.select_route_frame.change_color(self.DROPDOWN_COLOR)
+        self.select_route_frame.change_text_color(self.TEXT_COLOR)
+        self.select_route_frame.change_text_size(self.FONT_SIZE)
+        self.select_route_frame.change_text_font(self.FONT)
+        
+        self.progress_display_frame.change_color(self.BG_COLOR)
+        self.progress_display_frame.change_text_size(self.FONT_SIZE)
+        self.progress_display_frame.change_text_font(self.FONT)
+        
+        self.start_button.change_color(self.START_BUTTON_COLOR)
+        self.start_button.change_text_color(self.BG_COLOR)
+        self.start_button.change_text_size(self.FONT_SIZE+13)
+        self.start_button.change_text_font(self.FONT)
+        
+        
+        set_coordinates_popup_button = tk.Button(master, text = 'Coordinates', width = 13, font = self.font, command = self.popup_image_coordinates, background = self.CONFIG_BUTTON_COLORS, foreground = self.TEXT_COLOR)
+        split_keys_popup_button = tk.Button(master, text = 'Setup keys', width = 13, font = self.font, command = self.popup_split_keys, background = self.CONFIG_BUTTON_COLORS, foreground = self.TEXT_COLOR)
         
         self.progress_display_frame.config(borderwidth = 2)
         
@@ -81,7 +103,10 @@ class MainWindow(tk.Frame):
         coordinates = self.coordinates
         self.preview_image = PreviewImageFrame(popup_master)
         self.preview_image.set_coordinates(coordinates)
-        self.preview_image.set_bg_color(self.bg_color)
+        self.preview_image.set_bg_color(self.BG_COLOR)
+        self.preview_image.change_text_color(self.TEXT_COLOR)
+        self.preview_image.change_text_size(self.FONT_SIZE)
+        self.preview_image.change_text_font(self.FONT)
         self.preview_image.grid(column = 0, row = 0, columnspan = 2, padx = 1, pady = 1)
         self.load_icon(app.icon_path, popup_master)
         x, y, width, height = self.preview_image.show()
@@ -93,12 +118,11 @@ class MainWindow(tk.Frame):
         popup_master = tk.Toplevel(self.root)
         self.split_keys = InputSplitKeys(popup_master)
         self.split_keys.set_hotkeys(self.hotkeys)
-        self.split_keys.set_bg_color(self.bg_color)
+        self.split_keys.set_bg_color(self.BG_COLOR)
         self.split_keys.grid(column = 0, row = 0, columnspan = 2, padx = 1, pady = 0)
         self.load_icon(app.icon_path, popup_master)
         self.split_keys.show()
         self.save_classifier_preferences(self.PREFERENCES_FILE_NAME)
-        
     
     #Key is the name of the route, value is the class
     def create_route_dictionary(self, routes):
@@ -146,8 +170,7 @@ class MainWindow(tk.Frame):
         route = self.route_dict[route_name]
         print('Route: ', route_name)
     
-        progress_display_frame = self.progress_display_frame
-        self.star_classifier.start(route, progress_display_frame.update_information, start_fn = self.run_status_frame.set_running)
+        self.star_classifier.start(route, self.progress_display_frame.update_information, start_fn = self.run_status_frame.set_running)
     
     def save_classifier_preferences(self, file_name):
         self.shared_preferences.write_preferences(file_name, self.coordinates, self.route_name, self.hotkeys)

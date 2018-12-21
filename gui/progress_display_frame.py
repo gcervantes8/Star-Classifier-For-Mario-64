@@ -5,6 +5,7 @@
 """
 
 import tkinter as tk
+from tkinter.font import Font
 
 class ProgressDisplayFrame(tk.Frame):
     
@@ -18,17 +19,21 @@ class ProgressDisplayFrame(tk.Frame):
     probability_str = ''
     time_str = ''
     
+#    COLOR = '#47a3cc'
+    FONT_SIZE = 20
+    FONT = 'Arial'
+    
     def __init__(self, master):
         tk.Frame.__init__(self, master)
         self.root = master
-        
-        info_frame = self.create_information_frame(self)
-        info_frame.grid(column = 0, row = 0)
+        self.font = Font(family = self.FONT, size = self.FONT_SIZE, weight = 'bold')
+        self.info_frame = self.create_information_frame(self)
+        self.info_frame.grid(column = 0, row = 0)
         self.update_gui()
+        
 
     def create_information_frame(self, master):
         info_frame = tk.Frame(master)
-        
         
         star_frame, _, self.star_label = self.create_labels_pair(info_frame, 'Star')
         prediction_frame, _, self.prediction_label = self.create_labels_pair(info_frame, 'Prediction')
@@ -56,13 +61,12 @@ class ProgressDisplayFrame(tk.Frame):
     #Returns tuple with 3 items, tk.frame containing the both tk.labels, the tk.label with description, and the tk.label with the information
     def create_labels_pair(self, master, label_text):
         labels_frame = tk.Frame(master)
-        fontsize = 10
-        font_type = 'Times New Roman'
-        width = 10
-        label_description = tk.Label(labels_frame, width = width, text = label_text, font=(font_type, fontsize, 'bold'))
+        label_width = 4
+        description_width = 10
+        label_description = tk.Label(labels_frame, width = description_width, text = label_text, font = self.font)
         label_description.grid(column = 0, row = 0)
         
-        label_info = tk.Label(labels_frame, width = width, text = '  ', font=(font_type, fontsize))
+        label_info = tk.Label(labels_frame, width = label_width, text = '  ', font = self.font)
         label_info.grid(column = 1, row = 0)
         
         return labels_frame, label_description, label_info
@@ -80,6 +84,15 @@ class ProgressDisplayFrame(tk.Frame):
         #Only update if they are being shown
         if label != None:
             label.config(text = text)
+        
+    def change_color(self, color):
+        self.info_frame.configure(bg = color)
+        
+    def change_text_size(self, size):
+        self.font.configure(size = size)
+    
+    def change_text_font(self, font_family):
+        self.font.configure(family = font_family)
         
     #Star is an integer. Prediction, probability, and time are floats
     def update_information(self, star, prediction, probability, time):

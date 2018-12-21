@@ -5,12 +5,13 @@
 """
 
 import tkinter as tk
+from tkinter.font import Font
 
 class StartButtonFrame(tk.Frame):
     
     START_TEXT = 'START'
     STOP_TEXT = 'STOP'
-    
+    COLOR ='#efcf17'
     #Alternates between False and True everytime the button is pressed
     is_running = False
     
@@ -32,7 +33,9 @@ class StartButtonFrame(tk.Frame):
         
         fontsize = 20
         font_type = 'Times New Roman'
-        self.start_button.config(command = self.button_handler, textvariable = self.button_text, background = '#efcf17', foreground = 'black', borderwidth = 2, font=(font_type, fontsize, 'bold'))
+        self.font = Font(family = font_type, size = fontsize, weight = 'bold')
+        
+        self.start_button.config(command = self.button_handler, textvariable = self.button_text, background = self.COLOR, foreground = 'black', borderwidth = 2, font = self.font)
         self.update_button_text()
         
         
@@ -63,6 +66,20 @@ class StartButtonFrame(tk.Frame):
         correct_text = self.STOP_TEXT if self.is_running else self.START_TEXT
         self.button_text.set(correct_text)
 
+    def change_text_color(self, color):
+        self.start_button.configure(foreground = color)
+        
+    def change_color(self, color):
+        self.start_button.configure(background = color)
+        
+    def change_text_size(self, size):
+        self.font.configure(size = size)
+    
+    def change_text_font(self, font_family):
+        self.font.configure(family = font_family)
+        
+    
+        
         
 if __name__ == "__main__":
     root = tk.Tk()

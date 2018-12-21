@@ -5,6 +5,8 @@
 """
 
 import tkinter as tk
+from tkinter.font import Font
+
 from PIL import ImageTk, Image
 import pyautogui
 
@@ -28,10 +30,15 @@ class PreviewImageFrame(tk.Frame):
     
     DEFAULT_IMAGE_PATH = 'images/generated_preview_1.jpeg'
     
+    FONT_SIZE = 20
+    FONT = 'Arial'
+    
     def __init__(self, master):
         self.root = master
         tk.Frame.__init__(self, master)
         
+        self.font = Font(family = self.FONT, size = self.FONT_SIZE, weight = 'bold')
+        self.entry_font = Font(family = self.FONT, size = self.FONT_SIZE-6)
         self.screenshot_instance = ScreenshotTaker()
         
         preview_image_widget = self.create_preview_image(self)
@@ -40,13 +47,13 @@ class PreviewImageFrame(tk.Frame):
         self.set_sizes_frame = self.create_set_sizes_frame(self)
         self.set_sizes_frame.grid(column = 0, row = 1)
         
-        preview_button = tk.Button(self, text = 'Preview Image')
+        preview_button = tk.Button(self, text = 'Preview', background = '#4286f4', font = self.font)
         preview_button.grid(column = 0, row = 2, padx = 1, pady = 5)
         preview_button.config(command = self.preview_button_clicked)
         
         self.mouse_coord_stringvar = tk.StringVar()
-        mouse_coord_label = tk.Label(self, textvariable = self.mouse_coord_stringvar)
-        mouse_coord_label.grid(column = 0, row = 3, padx = 1, pady = 5)
+        self.mouse_coord_label = tk.Label(self, textvariable = self.mouse_coord_stringvar, font = self.font)
+        self.mouse_coord_label.grid(column = 0, row = 3, padx = 1, pady = 5)
         
         self.poll_mouse_coordinates()
         
@@ -58,7 +65,7 @@ class PreviewImageFrame(tk.Frame):
         img = Image.open(self.DEFAULT_IMAGE_PATH)
         self.show_image_on_label(img)
         
-        self.photo_image_label.config(borderwidth = 0, relief = "solid")
+        self.photo_image_label.config(borderwidth = 0, relief = 'solid')
         self.photo_image_label.config(highlightbackground = 'black')
         return self.photo_image_label
         
@@ -80,7 +87,7 @@ class PreviewImageFrame(tk.Frame):
         
     def poll_mouse_coordinates(self):
         x, y = pyautogui.position()
-        coords = 'Mouse cooordinates: ' + str(x) + ', ' +  str(y)
+        coords = 'Mouse cooordinates ' + str(x) + ', ' +  str(y)
         self.mouse_coord_stringvar.set(coords)
         self.after(100, self.poll_mouse_coordinates)
         
@@ -95,13 +102,25 @@ class PreviewImageFrame(tk.Frame):
         self.x_label.configure(background = bg_color)
         self.y_label.configure(background = bg_color)
         self.width_label.configure(background = bg_color)
+        self.mouse_coord_label.configure(background = bg_color)
+            
+    def change_text_color(self, color):
+        self.x_label.configure(foreground = color)
+        self.y_label.configure(foreground = color)
+        self.width_label.configure(foreground = color)
+        self.mouse_coord_label.configure(foreground = color)
+        
+    def change_text_size(self, size):
+        self.font.configure(size = size)
+    
+    def change_text_font(self, font_family):
+        self.font.configure(family = font_family)
     
     def create_set_sizes_frame(self, master):
         set_sizes_frame = tk.Frame(master)
-        
-        self.x_frame, self.x_label, self.x_entry, self.x_stringvar = self.create_label_entry_pair(set_sizes_frame, 'x')
-        self.y_frame, self.y_label, self.y_entry, self.y_stringvar = self.create_label_entry_pair(set_sizes_frame, 'y')
-        self.width_frame, self.width_label, self.width_entry, self.width_stringvar = self.create_label_entry_pair(set_sizes_frame, 'size')
+        self.x_frame, self.x_label, self.x_entry, self.x_stringvar = self.create_label_entry_pair(set_sizes_frame, 'X')
+        self.y_frame, self.y_label, self.y_entry, self.y_stringvar = self.create_label_entry_pair(set_sizes_frame, 'Y')
+        self.width_frame, self.width_label, self.width_entry, self.width_stringvar = self.create_label_entry_pair(set_sizes_frame, 'Size')
         
         padx = 7
         pady = 8
@@ -125,12 +144,10 @@ class PreviewImageFrame(tk.Frame):
     #Returns tuple with 3 items, tk.frame containing the tk.label and tk.entry, the tk.label, and the tk.entry
     def create_label_entry_pair(self, master, label_text):
         label_entry_frame = tk.Frame(master)
-        font_type = 'Times New Roman'
-        fontsize = 10
-        label = tk.Label(label_entry_frame, text = label_text, font=(font_type, fontsize, 'bold'))
+        label = tk.Label(label_entry_frame, text = label_text, font = self.font)
         label.grid(column = 0, row = 0)
         stringvar = tk.StringVar()
-        entry = tk.Entry(label_entry_frame, textvariable = stringvar, width = 5, justify='center')
+        entry = tk.Entry(label_entry_frame, textvariable = stringvar, width = 6, font = self.entry_font, justify = 'center')
         entry.grid(column = 1, row = 0)
         
         return label_entry_frame, label, entry, stringvar
@@ -140,7 +157,6 @@ class PreviewImageFrame(tk.Frame):
             return tk_stringvar.get()
         except:
             return ''
-    
     
     #Returns 4-tuple of integers (x,y,with, height)
     #Returns -1 for any integer if it wasn't an integer
