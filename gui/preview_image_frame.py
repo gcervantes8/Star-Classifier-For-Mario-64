@@ -28,7 +28,7 @@ class PreviewImageFrame(tk.Frame):
     y_stringvar = None
     width_stringvar = None
     
-    DEFAULT_IMAGE_PATH = 'images/generated_preview_1.jpeg'
+    DEFAULT_IMAGE_PATH = 'images/two_digit.png'
     
     FONT_SIZE = 20
     FONT = 'Arial'
@@ -38,7 +38,7 @@ class PreviewImageFrame(tk.Frame):
         tk.Frame.__init__(self, master)
         
         self.font = Font(family = self.FONT, size = self.FONT_SIZE, weight = 'bold')
-        self.entry_font = Font(family = self.FONT, size = self.FONT_SIZE-6)
+        self.entry_font = Font(family = self.FONT, size = self.FONT_SIZE)
         self.screenshot_instance = ScreenshotTaker()
         
         preview_image_widget = self.create_preview_image(self)
@@ -112,10 +112,12 @@ class PreviewImageFrame(tk.Frame):
         
     def change_text_size(self, size):
         self.font.configure(size = size)
-    
+        self.entry_font.configure(size = size)
+        
     def change_text_font(self, font_family):
         self.font.configure(family = font_family)
-    
+        self.entry_font.configure(family = font_family)
+        
     def create_set_sizes_frame(self, master):
         set_sizes_frame = tk.Frame(master)
         self.x_frame, self.x_label, self.x_entry, self.x_stringvar = self.create_label_entry_pair(set_sizes_frame, 'X')
@@ -145,7 +147,7 @@ class PreviewImageFrame(tk.Frame):
     def create_label_entry_pair(self, master, label_text):
         label_entry_frame = tk.Frame(master)
         label = tk.Label(label_entry_frame, text = label_text, font = self.font)
-        label.grid(column = 0, row = 0)
+        label.grid(column = 0, row = 0, padx = 2)
         stringvar = tk.StringVar()
         entry = tk.Entry(label_entry_frame, textvariable = stringvar, width = 6, font = self.entry_font, justify = 'center')
         entry.grid(column = 1, row = 0)

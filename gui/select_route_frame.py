@@ -20,7 +20,7 @@ class SelectRouteFrame(tk.Frame):
         OPTIONS = ['?']
         self.drop_down = self.create_drop_down(self, OPTIONS)
         self.drop_down.grid(column = 0, row = 0, columnspan = 2)
-        self.drop_down.configure(background = self.COLOR)
+        self.change_color(self.COLOR)
         self.font = Font(family = self.FONT, size = self.FONT_SIZE, weight = 'bold')
         self.drop_down.config(font = self.font)
         
@@ -42,7 +42,7 @@ class SelectRouteFrame(tk.Frame):
 
     def change_color(self, color):
         self.drop_down.configure(background = color)
-        self.root.configure(background = color)
+        self.configure(background = color)
         
     def change_text_color(self, color):
         self.drop_down.configure(fg = color)
