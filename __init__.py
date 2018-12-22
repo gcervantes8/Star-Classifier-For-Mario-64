@@ -9,7 +9,7 @@ from tkinter.font import Font
 
 from gui.preview_image_frame import PreviewImageFrame
 from gui.progress_display_frame import ProgressDisplayFrame
-from gui.select_route_frame import SelectRouteFrame
+from gui.dropdown_frame import DropdownFrame
 from gui.run_status_frame import RunStatusFrame
 from gui.input_split_keys_frame import InputSplitKeys
 from gui.start_button_frame import StartButtonFrame
@@ -61,7 +61,7 @@ class MainWindow(tk.Frame):
         
         #Creates frames
         self.progress_display_frame = ProgressDisplayFrame(master)
-        self.select_route_frame = SelectRouteFrame(master)
+        self.select_route_frame = DropdownFrame(master)
         self.run_status_frame = RunStatusFrame(master)
         self.start_button = StartButtonFrame(master)
         

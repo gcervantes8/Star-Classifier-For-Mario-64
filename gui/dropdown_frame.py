@@ -7,7 +7,7 @@
 import tkinter as tk
 from tkinter.font import Font
 
-class SelectRouteFrame(tk.Frame):
+class DropdownFrame(tk.Frame):
     
     COLOR = '#47a3cc'
     FONT_SIZE = 20
