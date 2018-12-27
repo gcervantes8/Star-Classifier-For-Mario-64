@@ -51,7 +51,7 @@ class MainWindow(tk.Frame):
         self.star_classifier = StarClassifier()
         self.shared_preferences = SharedPreferences()
         
-        self.coordinates, route_name, self.hotkeys = self.read_preferences(self.PREFERENCES_FILE_NAME)
+        self.coordinates, self.route_name, self.hotkeys = self.read_preferences(self.PREFERENCES_FILE_NAME)
         master.configure(background = self.BG_COLOR)
         self.configure(background = self.BG_COLOR)
         self._init_preferences()
@@ -100,6 +100,7 @@ class MainWindow(tk.Frame):
         
         self.route_dict = self.create_route_dictionary(routes)
         self.select_route_frame.set_drop_down_options(self.route_dict.keys())
+        self.select_route_frame.set_option(self.route_name)
     
     def popup_image_coordinates(self):
         popup_master = tk.Toplevel(self.root)
@@ -161,14 +162,14 @@ class MainWindow(tk.Frame):
     #Uses route from selectroute window
     #was_running is true if the neural network was running
     def start_clicked(self, was_running):
+        self.route_name = self.select_route_frame.stringvar.get()
         
         if was_running:
             self.star_classifier.stop()
             self.run_status_frame.set_stopped()
         else:
             self.run_status_frame.set_loading()
-            route_name = self.select_route_frame.stringvar.get()
-            thread = Thread(target = self.start_auto_splitter, args = (route_name,))
+            thread = Thread(target = self.start_auto_splitter, args = (self.route_name,))
             thread.start()
         
     #Starts the star_classifier
@@ -180,11 +181,13 @@ class MainWindow(tk.Frame):
         self.star_classifier.start(route, self.progress_display_frame.update_information, start_fn = self.run_status_frame.set_running)
     
     def save_classifier_preferences(self, file_name):
-        self.shared_preferences.write_preferences(file_name, self.coordinates, self.route_name, self.hotkeys)
+        route_name = self.select_route_frame.stringvar.get()
+        self.shared_preferences.write_preferences(file_name, self.coordinates, route_name, self.hotkeys)
         
     def read_preferences(self, file_name):
         coordinates, route_name, hotkeys = self.shared_preferences.parse_xml(file_name)
         return coordinates, route_name, hotkeys
+
 
     #Changes icon on the title bar of the window to given image
     #Takes the file path, and the tk toplevel window
@@ -193,10 +196,15 @@ class MainWindow(tk.Frame):
         self.img = ImageTk.PhotoImage(file = filepath)
         root.tk.call('wm', 'iconphoto', root._w, self.img)
         
+    def on_closing(self):
+        self.save_classifier_preferences(self.PREFERENCES_FILE_NAME)
+        self.root.destroy()
+        
 if __name__ == "__main__":
     root = tk.Tk()
     root.title('Star Classifier')
     app = MainWindow(root)
+    root.protocol("WM_DELETE_WINDOW", app.on_closing)
     app.load_icon(app.icon_path, root)
     root.mainloop()
     root.quit()
