@@ -17,8 +17,8 @@ class DropdownFrame(tk.Frame):
         self.root = master
         tk.Frame.__init__(self, master)
         
-        OPTIONS = ['?']
-        self.drop_down = self.create_drop_down(self, OPTIONS)
+        self.options = ['?']
+        self.drop_down = self.create_drop_down(self, self.options)
         self.drop_down.grid(column = 0, row = 0, columnspan = 2)
         self.change_color(self.COLOR)
         self.font = Font(family = self.FONT, size = self.FONT_SIZE, weight = 'bold')
@@ -33,13 +33,23 @@ class DropdownFrame(tk.Frame):
     
     #Options is the list of items it will set the dropdown as
     def set_drop_down_options(self, options):
+        self.options = list(options)
+        
         self.stringvar.set('')
         self.drop_down['menu'].delete(0, 'end')
-        for option in options:
+        for option in self.options:
             self.drop_down['menu'].add_command(label = option, command = tk._setit(self.stringvar, option))
         
-        self.stringvar.set(list(options)[0]) # default value
+        self.stringvar.set(self.options[0]) # default value
 
+    #Sets the given option if found in the list of options in the dropdown
+    def set_option(self, option_name):
+        
+        for option in self.options:
+            if option_name == option:
+                self.stringvar.set(option)
+        
+    
     def change_color(self, color):
         self.drop_down.configure(background = color)
         self.configure(background = color)
@@ -57,6 +67,6 @@ class DropdownFrame(tk.Frame):
 if __name__ == "__main__":
     root = tk.Tk()
     root.title('Select route')
-    app = SelectRouteFrame(root)
+    app = DropdownFrame(root)
     app.pack()
     root.mainloop()
