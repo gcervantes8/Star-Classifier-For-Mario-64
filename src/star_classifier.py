@@ -28,6 +28,19 @@ class StarClassifier():
     coordinates = None
     route_name = ''
     
+    #Specify how many frames of in game time (29.97fps) it should wait before making another prediction
+    error_frames = 2
+    game_fps = 29.97
+    time_per_pred = error_frames * (1/game_fps)
+    
+    #Module to take screenshots
+    screenshot_taker = ScreenshotTaker()
+    
+    #Threshold are between 0 and 1, if higher than threshold then does the split or reset
+    split_threshold = 0.4
+    reset_threshold = 0.8
+    
+    
     def __init__(self):
         self.is_running = False
         
@@ -70,8 +83,8 @@ class StarClassifier():
         self.is_running = False
         
     #Returns True if we think another star was gotten based on the models output, false otherwise
-    def check_model_output(self, current_star_number, prediction, prediction_prob, probability_threshold):
-        is_high_probabilty = prediction_prob >= probability_threshold
+    def got_next_star(self, current_star_number, prediction, pred_prob):
+        is_high_probabilty = pred_prob >= self.split_threshold
         is_next_star = prediction == current_star_number + 1
         
         return is_high_probabilty and is_next_star
@@ -86,134 +99,127 @@ class StarClassifier():
         self.is_running = True
         
         x, y, width, height = self.coordinates.get_coordinates()
-        print('Model')
-        print(self.model_path)
-        print('Coordinates')
-        print('x' , x , 'y', y, 'width', width, 'height', height)
-        split_key, _ = self.hotkeys.get_hotkeys()
-        print('Split key')
-        print(split_key)
+        print('Model path: ', self.model_path)
+        print('Coordinates\nx', x , 'y', y, 'width', width, 'height', height)
+        split_key, reset_key = self.hotkeys.get_hotkeys()
+        print('Split key', split_key, 'Reset key', reset_key)
         
         #Loads neural network model used to make predictions
         model = self._load_nn_model(self.model_path)
         
-        starting_star_number, _, _, _ = route.get_category_splitting_information()
+        starting_star_num, immediate_splits, fadeout_splits, fadeout_amounts = route.get_category_splitting_information()
         
         #Star we are in, start at -1 if you would like for it to split when it finds the number 0
-        current_star_number = starting_star_number - 1
+        star_num = starting_star_num - 1
         
-        #The prediction probability needs to be higher than this threshold so that we can be certain of this classification
-        probability_threshold = 0.4
-        is_fadeout_mode = True
-        #Counter is amount of times it has screenshotted and predicted
-        n_predictions = 0
+        #Has the amount of fadeouts it needs to see for it to split, updated everytime a new star is collected
+        black_fadeouts, white_fadeouts = [], []
         
-        screenshot_maker = ScreenshotTaker()
+        black_fadeouts_found, white_fadeouts_found = 0, 0
         
-        #Specify how many frames of in game time (29.97fps) it should wait before making another prediction
-        error_frames = 2
-        time_between_predictions = error_frames * (1/29.97) #Convert 29.97 fps to amount of seconds for 1 frame
-        #Amount of time it should screenshot and predict before progress is printed/displayed
-        iterations_before_display = 20
-        
-        #Keeps track of how much time has passed since last output display
-        display_prediction_time = 0
-        
-        star_black_fadeouts, star_white_fadeouts = [], []
-        star_black_fadeouts_found, star_white_fadeouts_found = 0, 0
+        time_without_star_count = 0 #Keeps track of the amount of time it hasn't seen the star counter in seconds (used for reseting)
+        estimate_intro_length_in_seconds = 38 #If hasn't seen a star counter in this amount of time, it's likely game was reset
         
         if start_fn != None:
             start_fn()
         
         while self.is_running:
-            n_predictions += 1
             
+            pil_img, screenshot_time = self.take_screenshot_and_resize()
             
-            pil_img, screenshot_time = screenshot_maker.screenshot_mss(x, y, width, height)
-            pil_img = resize_image(pil_img)
+            prediction, prediction_prob, predict_time = self.predict_star_number_from_screenshot(pil_img, model)
             
-            is_fadeout_mode = star_black_fadeouts != [] or star_white_fadeouts != []
-            if is_fadeout_mode:
+            time_to_screenshot_and_pred = screenshot_time + predict_time
+            
+            game_was_reset = prediction == starting_star_num and prediction_prob > self.reset_threshold and time_without_star_count > estimate_intro_length_in_seconds
+            
+            if game_was_reset:
+                star_num = starting_star_num - 1
+                time_without_star_count = 0
+                self.split_in_new_thread(reset_key, 0)
+                continue
+               
+            if black_fadeouts != []:
+                is_black_fadeout, time_black_fadeout = self.img_in_blackfadeout(pil_img)
+                black_fadeouts_found += is_black_fadeout
+                time_to_screenshot_and_pred += time_black_fadeout
                 
-                if star_black_fadeouts != []:
-                    is_in_black_fadeout, star_predict_time = self.img_is_in_blackfadeout(pil_img)
-                    if is_in_black_fadeout:
-                        print('Found black fadeout')
-                        star_black_fadeouts_found += 1
-                        if star_black_fadeouts_found in star_black_fadeouts:
-                            self.split_in_new_thread(split_key, 0.45)
-                            star_black_fadeouts.remove(star_black_fadeouts_found)
-                        #Stop until fadeout is finished
-                        time.sleep(3.1)
-                        
-                if star_white_fadeouts != []:
-                    is_in_white_fadeout, star_predict_time = self.img_is_in_whitefadeout(pil_img)
-                    if is_in_white_fadeout:
-                        star_white_fadeouts_found += 1
-                        if star_white_fadeouts_found in star_white_fadeouts:
-                            self.split_in_new_thread(split_key, 0.15)
-                            star_white_fadeouts.remove(star_white_fadeouts_found)
-                        #Stop until fadeout is finished
-                        time.sleep(8)
-                    
-            else:
-                prediction, prediction_prob, star_predict_time = self.predict_star_number_from_screenshot(pil_img, model)
-                #Returns immediate_split, fade_out_split, or don't split
-                grabbed_next_star = self.check_model_output(current_star_number, prediction, prediction_prob, probability_threshold)
-                if grabbed_next_star:
-                    
-                    #Moves onto next star because they grabbed another star
-                    current_star_number += 1
-                    is_immediate_split, is_fadeout_split, star_black_fadeouts, star_white_fadeouts = self.decide_split(current_star_number, route)
-                    star_black_fadeouts_found, star_white_fadeouts_found = 0, 0
-                    if is_immediate_split:
-                        self.split_in_new_thread(split_key, 0)
+                if is_black_fadeout:
+                    #Handles black fadeouts
+                    self.handle_fadeouts(black_fadeouts_found, black_fadeouts, 0.45, 3.1)
+                    continue
+            
+            if white_fadeouts != []:
+                is_white_fadeout, time_white_fadeout = self.img_in_whitefadeout(pil_img)
+                white_fadeouts_found += is_white_fadeout
+                time_to_screenshot_and_pred += time_white_fadeout
+                if is_white_fadeout:
+                    #Handles white fadeouts
+                    self.handle_fadeouts(black_fadeouts_found, black_fadeouts, 0.15, 8)
+                    continue
+
+            #Returns immediate_split, fade_out_split, or don't split
+            is_next_star = self.got_next_star(star_num, prediction, prediction_prob)
+            if is_next_star:
+                #Moves onto next star because they grabbed another star
+                star_num += 1
                 
-                display_prediction_time += screenshot_time
-                display_prediction_time += star_predict_time
-                display_handler(current_star_number, prediction, prediction_prob, display_prediction_time/iterations_before_display)
+                #Immediate split
+                if star_num in immediate_splits:
+                    self.split_in_new_thread(split_key, 0) 
+                
+                time_without_star_count = 0
+                
+                #Update fadout amounts needed for this new star
+                black_fadeouts_found, white_fadeouts_found = 0, 0
+                black_fadeouts, white_fadeouts = self.get_fadeouts(star_num, fadeout_splits, fadeout_amounts)
+
+            not_showing_star_count = (prediction == 121 or prediction == 122) 
+            
+            #If screenshot didn't have a star counter
+            if not_showing_star_count:
+                time_without_star_count += max(time_to_screenshot_and_pred, self.time_per_pred)
+            
+            
+            display_handler(star_num, prediction, prediction_prob, time_to_screenshot_and_pred)
                 
             #If finished early, put thread in waiting until reaches time_between_predictions
-            if star_predict_time < time_between_predictions:
-                if is_fadeout_mode: #Waits less if is in fadeout mode
-                    time.sleep( (time_between_predictions/2)-star_predict_time)
-                else:
-                    time.sleep(time_between_predictions-star_predict_time)
-            display_prediction_time = 0
+            self.sleep_between_predictions(time_to_screenshot_and_pred)
+                
     
     
-    #Decides it should split based on the route
-    def decide_split(self, current_star_number, route):
-        _, immediate_splits, fadeout_splits, fadeout_amounts = route.get_category_splitting_information()
-        is_immediate_split = current_star_number in immediate_splits
-        is_fadeout_split = current_star_number in fadeout_splits
-        if is_fadeout_split:
-#            index = fadeout_splits.index(current_star_number)
-            indices = [i for i, x in enumerate(fadeout_splits) if x == current_star_number]
-            fadeouts = [fadeout_amounts[index] for index in indices]
-        else:
-            fadeouts = []
+    def handle_fadeouts(self, fadeouts_found, fadeout_amounts, split_time, sleep_time):
+        split_key, _ = self.hotkeys.get_hotkeys()
+        
+        if fadeouts_found in fadeout_amounts:
+            self.split_in_new_thread(split_key, split_time)
+        time.sleep(sleep_time)
+        
+    
+    def get_fadeouts(self, current_star_num, fadeout_splits, fadeout_amounts):
+        indices = [i for i, x in enumerate(fadeout_splits) if x == current_star_num]
+        fadeouts = [fadeout_amounts[index] for index in indices]
         black_fadeouts = [fadeout for fadeout in fadeouts if fadeout > 0]
         white_fadeouts = [abs(fadeout) for fadeout in fadeouts if fadeout < 0]
-        return is_immediate_split, is_fadeout_split, black_fadeouts, white_fadeouts
-                
+        return black_fadeouts, white_fadeouts
+    
+    def take_screenshot_and_resize(self):
+        x, y, width, height = self.coordinates.get_coordinates()
+        pil_img, screenshot_time = self.screenshot_taker.screenshot_mss(x, y, width, height)
+        start_time = time.time()
+        pil_img = resize_image(pil_img)
+        resize_time = time.time() - start_time
+        return pil_img, screenshot_time + resize_time
+    
+    def sleep_between_predictions(self, time_to_screenshot_and_classify):
+        time_to_sleep = self.time_per_pred - time_to_screenshot_and_classify
+        if time_to_sleep > 0:
+            time.sleep(self.time_per_pred - time_to_screenshot_and_classify)
+            
     def split_in_new_thread(self, split_key, delay):
         thread = Thread(target = self.split, args = (split_key, delay))
         thread.start()
-        
-    #Returns true if the given PIL image is a black fadeout (fadeout is when game does fadeout animation after collecting a star)
-    def img_is_in_fadeout(self, star_image):
-        start_time = time.time()
-        #grayscale_star_image = star_image.convert('LA') #Converts to grayscale image
-        img_np = pil_imgs_to_numpy([star_image])
-        flattened_img = img_np.flatten()
-        consider_gray = 0.27 #If value is lower than 0.27 consider it black/fadeout pixel (after converting img into 0 to 1)
-        
-        num_black_pixels = np.sum(flattened_img < consider_gray)
-        is_in_fadeout = num_black_pixels > len(flattened_img) * 0.92 #If more than 92% of pixels in image are black, then say image is a fadeout image
-        star_prediction_time = time.time() - start_time
-        return is_in_fadeout, star_prediction_time
-    
+
     #Returns true if the given PIL image is a black fadeout (fadeout is when game does fadeout animation after collecting a star)
     def img_pixels_meet_threshold(self, star_image, color_threshold):
         
@@ -225,22 +231,22 @@ class StarClassifier():
         
         return num_threshold_pixels, len(flattened_img)
     
-    def img_is_in_whitefadeout(self, star_image):
+    def img_in_whitefadeout(self, star_image):
         start_time = time.time()
         consider_nonwhite = 0.80 
         num_nonwhite_pixels, num_pixels = self.img_pixels_meet_threshold(star_image, consider_nonwhite)
-        is_in_whitefadeout = num_nonwhite_pixels < num_pixels * 0.08 #If there's under 8% of pixels aren't white
-        star_prediction_time = time.time() - start_time
-        return is_in_whitefadeout, star_prediction_time
+        is_whitefadeout = num_nonwhite_pixels < num_pixels * 0.08 #If there's under 8% of pixels aren't white
+        pred_time = time.time() - start_time
+        return is_whitefadeout, pred_time
     
-    def img_is_in_blackfadeout(self, star_image):
+    def img_in_blackfadeout(self, star_image):
         start_time = time.time()
-        consider_gray = 0.07 #If value is lower than 0.27 consider it black/fadeout pixel (after converting img into 0 to 1)
+        consider_gray = 0.06 #If value is lower than this consider it black/fadeout pixel (after converting img into 0 to 1)
         num_black_pixels, num_pixels = self.img_pixels_meet_threshold(star_image, consider_gray)
-        is_in_blackfadeout = num_black_pixels > num_pixels * 0.98 #If more than 92% of pixels in image are black, then say image is a fadeout image
+        is_blackfadeout = num_black_pixels > num_pixels * 0.98 #If more than 92% of pixels in image are black, then say image is a fadeout image
         
-        star_prediction_time = time.time() - start_time
-        return is_in_blackfadeout, star_prediction_time
+        pred_time = time.time() - start_time
+        return is_blackfadeout, pred_time
         
     #Model is the successfully keras loaded model that will make the predictions
     #star_image is the PIL image that has the star counter
