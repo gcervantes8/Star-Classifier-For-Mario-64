@@ -60,6 +60,17 @@ def mario_image_generator():
         fill_mode='nearest')    
     return image_gen
 
+def no_modifications_generator():
+    from keras.preprocessing.image import ImageDataGenerator
+    image_gen = ImageDataGenerator(
+        rotation_range = 0,
+        width_shift_range = 0, #Previous value: 0.05
+        height_shift_range = 0, #Previous value: 0.1
+        channel_shift_range = 0,
+        zoom_range = 0,
+        horizontal_flip = False,
+        fill_mode='nearest')    
+    return image_gen
 
 #Saves some generated images so we can see how the generated images look like
 #Datagen is the generator, images is the numpy array of images
@@ -71,7 +82,7 @@ def preview_images(datagen, images, n_imgs_to_preview):
     i = 0
     batch_size = 50
     #, save_to_dir='../preview', save_prefix='item', save_format='jpeg'
-    for batch in datagen.flow(images, batch_size=batch_size, save_to_dir='preview', save_prefix='item', save_format='jpeg'):
+    for batch in datagen.flow(images, batch_size=batch_size, save_to_dir='preview', save_prefix='item', save_format='png'):
         i += batch_size
         if i > n_imgs_to_preview:
             break  # otherwise the generator would loop indefinitely
