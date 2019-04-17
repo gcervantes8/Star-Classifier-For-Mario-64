@@ -121,7 +121,7 @@ After getting star 13, there is 1 fadeout that occurs after you go down the bows
 
 ## To run from source code
 
-\__init\__.py starts the program
+\_\_init\_\_.py starts the program
 
 Requirements:
 * Python 3.6
