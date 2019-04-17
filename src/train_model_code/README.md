@@ -10,10 +10,10 @@ train_model.py is used to train the model
 Image fed to neural network is cropped image of star number.
 
 
-![Sample image of game from player Siglemic](images/sample_data_siglemic_1.jpg) 
-![Sample image of game from player Cheese05](images/sample_data_cheese05_1.jpg) 
-![Sample image of game from player Xiah](images/sample_data_xiah_1.jpg)
-![Sample image of game from player ZDeztroyerz](images/sample_data_zdeztroyerz_1.png)
+![Sample image of game from player Siglemic](https://github.com/gcervantes8/Star-Classifier-For-Mario-64/blob/master/images/sample_data_siglemic_1.jpg) 
+![Sample image of game from player Cheese05](https://github.com/gcervantes8/Star-Classifier-For-Mario-64/blob/master/images/sample_data_cheese05_1.jpg) 
+![Sample image of game from player Xiah](https://github.com/gcervantes8/Star-Classifier-For-Mario-64/blob/master/images/sample_data_xiah_1.jpg)
+![Sample image of game from player ZDeztroyerz](https://github.com/gcervantes8/Star-Classifier-For-Mario-64/blob/master/images/sample_data_zdeztroyerz_1.png)
 
 
 
@@ -63,11 +63,11 @@ This is how data is stored for training
 
 #### Generated images
 
-![Generated image of star counter](images/generated_preview_1.jpeg) 
-![Generated image of star counter](images/generated_preview_2.jpeg) 
-![Generated image of star counter](images/generated_preview_3.jpeg) 
-![Generated image of star counter](images/generated_preview_4.jpeg) 
-![Generated image of star counter](images/generated_preview_5.jpeg)
+![Generated image of star counter](https://github.com/gcervantes8/Star-Classifier-For-Mario-64/blob/master/images/generated_preview_1.jpeg) 
+![Generated image of star counter](https://github.com/gcervantes8/Star-Classifier-For-Mario-64/blob/master/images/generated_preview_2.jpeg) 
+![Generated image of star counter](https://github.com/gcervantes8/Star-Classifier-For-Mario-64/blob/master/images/generated_preview_3.jpeg) 
+![Generated image of star counter](https://github.com/gcervantes8/Star-Classifier-For-Mario-64/blob/master/images/generated_preview_4.jpeg) 
+![Generated image of star counter](https://github.com/gcervantes8/Star-Classifier-For-Mario-64/blob/master/images/generated_preview_5.jpeg)
 
 
 More training data was used by generating images that were shifted and had color changes.  Keras.preprocessing library helped with this.  Look at /src/train_model_code/preprocess.py for more information
