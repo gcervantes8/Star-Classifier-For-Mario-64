@@ -6,7 +6,7 @@
 
 import tkinter as tk
 from tkinter.font import Font
-
+from tkinter import messagebox
 from gui.preview_image_frame import PreviewImageFrame
 from gui.progress_display_frame import ProgressDisplayFrame
 from gui.dropdown_frame import DropdownFrame
@@ -16,7 +16,7 @@ from gui.start_button_frame import StartButtonFrame
 
 from threading import Thread
 
-from src.star_classifier import StarClassifier
+from src.auto_splitter import AutoSplitter
 from src.coordinates import Coordinates
 from src.hotkeys import Hotkeys
 from src.shared_preferences import SharedPreferences
@@ -48,7 +48,7 @@ class MainWindow(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
         self.root = master
-        self.star_classifier = StarClassifier()
+        self.auto_splitter = AutoSplitter()
         self.shared_preferences = SharedPreferences()
         
         self.coordinates, self.route_name, self.hotkeys = self.read_preferences(self.PREFERENCES_FILE_NAME)
@@ -96,8 +96,8 @@ class MainWindow(tk.Frame):
         split_keys_popup_button.grid(column = 1, row = 2, rowspan = 2, padx = 0, pady = 1)
         
         route_handler = RouteFileHandler()
+        #Returns a list of route objects from route directory
         routes = route_handler.get_routes_from_directory(self.routes_directory)
-        
         self.route_dict = self.create_route_dictionary(routes)
         self.select_route_frame.set_drop_down_options(self.route_dict.keys())
         self.select_route_frame.set_option(self.route_name)
@@ -117,7 +117,6 @@ class MainWindow(tk.Frame):
         coordinates.set_coordinates(x, y, width, height)
         self.save_classifier_preferences(self.PREFERENCES_FILE_NAME)
         
-        
     def popup_split_keys(self):
         popup_master = tk.Toplevel(self.root)
         self.split_keys = InputSplitKeys(popup_master)
@@ -131,6 +130,9 @@ class MainWindow(tk.Frame):
         self.load_icon(app.icon_path, popup_master)
         self.split_keys.show()
         self.save_classifier_preferences(self.PREFERENCES_FILE_NAME)
+        
+    def popup_msg(self, title, msg):
+        messagebox.showwarning("Warning","Route not found")
     
     #Key is the name of the route, value is the class
     def create_route_dictionary(self, routes):
@@ -140,6 +142,8 @@ class MainWindow(tk.Frame):
             
         return route_dict
         
+    #Initalizes the coordinates and hotkeys used from last session
+    #If first time using application, then initializes with default values
     def _init_preferences(self):
         #If there wasn't any previous saved data on coordiantes or coordinates last used, creates new
         if self.coordinates == None:
@@ -151,34 +155,40 @@ class MainWindow(tk.Frame):
         self._set_coordinates(self.coordinates)
         self._set_hotkeys(self.hotkeys)
         
+    #Sets new hotkeys to be used in the classifier
     def _set_hotkeys(self, hotkeys):
         self.hotkeys = hotkeys
-        self.star_classifier.set_hotkeys(hotkeys)
+        self.auto_splitter.hotkeys = hotkeys
         
+    #Sets new coordinates to be used in the classifier
     def _set_coordinates(self, coordinates):
         self.coordinates = coordinates
-        self.star_classifier.set_coordinates(coordinates)
+        self.auto_splitter.coordinates = coordinates
         
-    #Uses route from selectroute window
-    #was_running is true if the neural network was running
+    #Called when start button is clicked
+    #Stops classifier if was previously running, or starts if it wasn't
+    #param was_running should be true if the neural network was running
     def start_clicked(self, was_running):
+        #Route used is the one that was selected
         self.route_name = self.select_route_frame.stringvar.get()
         
         if was_running:
-            self.star_classifier.stop()
+            self.auto_splitter.stop()
             self.run_status_frame.set_stopped()
         else:
-            self.run_status_frame.set_loading()
-            thread = Thread(target = self.start_auto_splitter, args = (self.route_name,))
-            thread.start()
-        
-    #Starts the star_classifier
-    def start_auto_splitter(self, route_name):
-        
-        route = self.route_dict[route_name]
-        print('Route: ', route_name)
-    
-        self.star_classifier.start(route, self.progress_display_frame.update_information, start_fn = self.run_status_frame.set_running)
+            try:
+                route = self.route_dict[self.route_name]
+                print('Route: ', self.route_name)
+                self.run_status_frame.set_loading()
+                thread = Thread(target = self.start_auto_splitter, args = (route,))
+                thread.start()
+            except KeyError:
+                self.popup_msg(self, "Warning", "Route not found")
+            
+            
+    #Starts the image classifier
+    def start_auto_splitter(self, route):
+        self.auto_splitter.start(route, self.progress_display_frame.update_information, start_fn = self.run_status_frame.set_running)
     
     def save_classifier_preferences(self, file_name):
         route_name = self.select_route_frame.stringvar.get()
