@@ -35,10 +35,10 @@ class ProgressDisplayFrame(tk.Frame):
     def create_information_frame(self, master):
         info_frame = tk.Frame(master)
         
-        star_frame, _, self.star_label = self.create_labels_pair(info_frame, 'Star')
-        prediction_frame, _, self.prediction_label = self.create_labels_pair(info_frame, 'Prediction')
-#        probability_frame, _, probability_label = self.create_labels_pair(info_frame, 'Certainty')
-#        time_frame, _, time_label = self.create_labels_pair(info_frame, 'Time')
+        star_frame, _, self.star_label = self.create_labels_pair(info_frame, 'Aim split')
+        prediction_frame, _, self.prediction_label = self.create_labels_pair(info_frame, 'Aim fadeout')
+        probability_frame, _, self.probability_label = self.create_labels_pair(info_frame, 'Certainty')
+        time_frame, _, self.time_label = self.create_labels_pair(info_frame, 'Pred')
         
         self.update_information('0', -1, 0.0, 0.0)
         
@@ -46,8 +46,8 @@ class ProgressDisplayFrame(tk.Frame):
         pady = 3
         star_frame.grid(column = 0, row = 0, padx = padx, pady = pady)
         prediction_frame.grid(column = 0, row = 1, padx = padx, pady = pady)
-#        probability_frame.grid(column = 0, row = 2, padx = padx, pady = pady)
-#        time_frame.grid(column = 0, row = 3, padx = padx, pady = pady)
+        probability_frame.grid(column = 0, row = 2, padx = padx, pady = pady)
+        time_frame.grid(column = 0, row = 3, padx = padx, pady = pady)
         
         return info_frame
     
@@ -97,11 +97,14 @@ class ProgressDisplayFrame(tk.Frame):
     #Star is an integer. Prediction, probability, and time are floats
     def update_information(self, star, prediction, probability, time):
         
-        star_display = 0 if star == -1 else star
-        self.star_display = str(star_display)
-        self.prediction_str = 'N/A' if prediction == -1 else str(prediction)
+#        star_display = 0 if star == -1 else star
+        self.star_display = str(star)
+#        self.prediction_str = 'N/A' if prediction == -1 else str(prediction)
+        self.prediction_str = str(prediction)
+        
         self.probability_str =  "{0:.3f}".format(probability)
-        self.time_str =  "{0:.3f}".format(time) + 's'
+#        self.time_str =  "{0:.3f}".format(time) + 's'
+        self.time_str = str(time)
         
 if __name__ == "__main__":
     root = tk.Tk()

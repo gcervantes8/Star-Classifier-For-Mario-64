@@ -20,7 +20,7 @@ from src.print_progress import print_progress_information
 class StarClassifier():
     
     #Default model
-    model_path = 'models/sm64Model3.hdf5'
+    model_path = 'models/sm64Model4.hdf5'
     
     splitting_program = 'LiveSplit'
     
@@ -127,6 +127,7 @@ class StarClassifier():
             
             pil_img, screenshot_time = self.take_screenshot_and_resize()
             
+            
             prediction, prediction_prob, predict_time = self.predict_star_number_from_screenshot(pil_img, model)
             
             time_to_screenshot_and_pred = screenshot_time + predict_time
@@ -187,7 +188,8 @@ class StarClassifier():
             self.sleep_between_predictions(time_to_screenshot_and_pred)
                 
     
-    
+    #If has same amount of fadeouts found as fadeout amount needed, then splits
+    #Sleeps for split_time amount of time
     def handle_fadeouts(self, fadeouts_found, fadeout_amounts, split_time, sleep_time):
         split_key, _ = self.hotkeys.get_hotkeys()
         
@@ -220,6 +222,17 @@ class StarClassifier():
         thread = Thread(target = self.split, args = (split_key, delay))
         thread.start()
 
+
+    def are_color_dist_close(self, red, green, blue, threshold_dist):
+        rg_dist = np.amax(abs(red-green))
+        rb_dist = np.amax(abs(red-blue))
+        gb_dist = np.amax(abs(green-blue))
+        max_dist = max(rg_dist, rb_dist, gb_dist)
+        
+        if max_dist > threshold_dist:
+            return False
+        return True
+    
     #Returns true if the given PIL image is a black fadeout (fadeout is when game does fadeout animation after collecting a star)
     def img_pixels_meet_threshold(self, star_image, color_threshold):
         
@@ -241,10 +254,23 @@ class StarClassifier():
     
     def img_in_blackfadeout(self, star_image):
         start_time = time.time()
-        consider_gray = 0.06 #If value is lower than this consider it black/fadeout pixel (after converting img into 0 to 1)
-        num_black_pixels, num_pixels = self.img_pixels_meet_threshold(star_image, consider_gray)
-        is_blackfadeout = num_black_pixels > num_pixels * 0.98 #If more than 92% of pixels in image are black, then say image is a fadeout image
+        consider_gray = 0.08 #If value is lower than this consider it black/fadeout pixel (after converting img into 0 to 1)
+        img_np = pil_imgs_to_numpy([star_image])[0] 
         
+        red = img_np[:,:,0]
+        green = img_np[:,:,1]
+        blue = img_np[:,:,2]
+        threshold_dist = 0.035
+        has_large_color_dist = self.are_color_dist_close(red, green, blue, threshold_dist)
+        
+        
+        num_black_pixels, num_pixels = self.img_pixels_meet_threshold(star_image, consider_gray)
+        is_img_blackish = num_black_pixels > num_pixels * 0.98 #If more than 92% of pixels in image are black, then say image is a fadeout image
+        
+#        print('Is a black image:', str(is_img_blackish))
+#        print('Is there distance between colors? ', str(has_large_color_dist))
+        
+        is_blackfadeout = is_img_blackish and not has_large_color_dist
         pred_time = time.time() - start_time
         return is_blackfadeout, pred_time
         

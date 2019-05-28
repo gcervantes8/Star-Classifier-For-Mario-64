@@ -1,40 +1,28 @@
 # Star Classifier For Mario 64
 
-Uses images recognition to classify how many stars you have in Super Mario 64
+Can auto-split by recognizing how many stars you have in the game.  A deep learning model is used to recognize how many stars the player has from an image.
+
 
 ## Release
 
-Latest release can be found [here](https://github.com/gerardocervantes8/Star-Classifier-For-Mario-64/releases) version 0.95
+Latest release (v0.95) can be found [here](https://github.com/gcervantes8/Star-Classifier-For-Mario-64/releases)
 
 
 
-## Benefits
+## Features
 
 
 More precise than manually splitting
 
-Ability to get split times live or from an existing video
+Can be ran on a video or be used live
 
-Makes splitting at each star viable
-
-
-## To run from source code
-
-Requirements:
-* Python 3.6
-* Tensorflow library - Comes with numpy (other backend library like Theano can be used but wasn't tested on)
-* Keras library
-* MSS library
-* Pillow Library
-* pyautogui library
-* pywin32
+You can modify when to split, e.g. at every star
 
 
-## High level function
+## Running the release
 
-\_\_init__.py - starts the program
+Star-Classifier.exe opens the application you downloaded from the release page
 
-Star-Classifier.exe opens the application if you downloaded from a release
 
 ## How to use
 
@@ -42,33 +30,28 @@ Star-Classifier.exe opens the application if you downloaded from a release
 
 ![Image of GUI main menu](images/MainMenu.png) 
 
+The dropdown has the different routes you can use
 
-You select the route you want to use from the dropdown 
-
-Custom routes can be added by adding the .route file in the routes directory
+Custom routes can be created and edited by modifying the routes directory
 
 
 ### Key setup
 
 ![Image of GUI key setup window ](images/Keysetup.png) 
 
-The key you use to split on LiveSplit goes here
+The key you use to split on LiveSplit can be changed here
 
-Keys used for splitting:  https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.sendkeys?redirectedfrom=MSDN&view=netframework-4.7.2
+The keys used for splitting can be found in the following link - [here](https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.sendkeys?redirectedfrom=MSDN&view=netframework-4.7.2)
+
 
 
 ### Coordinates setup
 
 ![Image of GUI coordinates window ](images/Coordinates.png) 
 
-Preview button takes a screenshot at the coordinates
+The coordinates should be set so it takes a screenshot of the star counter in the game, use the preview button to know the location of coordinates.
 
-
-You want the coordinates to be the star counter in your game
-
-
-This program takes screenshots at the coordinates given multiple times, so don't move that window or put other windows over it
- 
+The coordinates needs to be the star counter in your game, look at the example images for reference
 
  
 #### Example images
@@ -80,11 +63,11 @@ This program takes screenshots at the coordinates given multiple times, so don't
 
  ## Creating a route
 
-Routes end with the .route extension and are all located in the routes directory
+Routes that are in the dropdown end with the .route extension and are all located in the routes directory
 
 Routes are editable by opening them with notepad, notepad++, or any other text editing program
 
-Route files use the JSON format so make sure to keep the JSON format or it might result in errors
+Route files use the JSON format, keep the JSON format or the route will not work
 
 
 * name:  This is the name of your route
@@ -119,134 +102,37 @@ You make the fadeout_amount 2 for star 13 because it's the 2nd fadeout after you
 After getting star 13, there is 1 fadeout that occurs after you go down the bowser pipe, and after you beat bowser and get the key there is another fadeout that occurs and this is where you want to split.
  
 
-```
+```json
 ...
-
 "fadeout_splits": [10, 13], 
-
 "fadeout_amounts": [1, 2]
-
 ...
 ```
 
-## Debug Guide
+## Not working? - Debug Guide
 
-1. Make sure you don't have an application like F.lux modyfing the screenshot.  You might have to disable it while the application is running.
-2. Make sure the star number isn't being blocked by any windows over it, and can clearly be seen.
-3. Make sure the star image is being screenshotted at a good position, you should try to get the images at a very similar position to the ones in the example images section
-4. Run the application where a star is clearly visible and check if the application is giving correct prediction for that star.  If it's giving the correct prediction, it could be a problem with it trying to use an unsupported split key.  Make sure you press Stop and then Start again after every reset.  
-5. You can contact me with a screenshot of the coordinates with the preview button clicked to try and debug why it isn't working.
-
-
-## Data used for training
-
-
-### Data Information
-
-Image fed to neural network is cropped image of star number.
-
-
-![Sample image of game from player Siglemic](images/sample_data_siglemic_1.jpg) 
-![Sample image of game from player Cheese05](images/sample_data_cheese05_1.jpg) 
-![Sample image of game from player Xiah](images/sample_data_xiah_1.jpg)
-![Sample image of game from player ZDeztroyerz](images/sample_data_zdeztroyerz_1.png)
+1. An application like F.lux, which changes the colors of the monitor should be disabled
+2. Star number has to be clearly be seen, and shouldn't be blocked by any windows over it
+3. The star image being screenshotted should be at a very similar position to the ones in the example images section
+4. Run the application and check that the application is giving correct prediction, if it is, then it could be an unsupported split key.  Make sure you press Stop and then Start again after every reset.  
+5. You can contact me or post on the Github issues pages to resolve the issue
 
 
 
+## To run from source code
 
-### Data gathering
+\_\_init\_\_.py starts the program
 
-Data was gathered by downloading videos of speedrunners and putting it in the correct folder depending on how many stars they have
+Requirements:
+* Python 3.6
+* Tensorflow library - Comes with numpy (other backend library like Theano can be used but wasn't tested on)
+* Keras library
+* MSS library
+* Pillow Library
+* pyautogui library
+* pywin32
 
-### Data labels
-
-Output is a one-hot encoding from 0 to 120 of how many stars you have
-
-2 more binary targets were added as 121 (black screen) and 122 (white screen)
-
-### Data directory structure
-
-
-```
-.
-+-- mario64_images
-|   +-- 0
-|   |	+-- Images from Player1
-|   |   |	+-- img1.png
-|   |   |	+-- img2.png
-|   |   |	+-- img3.png
-|   |	+-- Images from Player2
-|   |   |	+-- img1.jpg
-|   |   |	+-- img2.jpg
-|   |   |	+-- img300.jpg
-|   +-- 1
-|   |	+-- Images from Player20
-|   |   |	+-- img100.png
-|   +-- 2
-|   +-- 3
-|   +-- 4
-...
-|   +-- 120
-
-
-```
-
-This is how data is stored for training
-
-
-
-### Data Modifications/Preprocessing
-
-
-#### Generated images
-
-![Generated image of star counter](images/generated_preview_1.jpeg) 
-![Generated image of star counter](images/generated_preview_2.jpeg) 
-![Generated image of star counter](images/generated_preview_3.jpeg) 
-![Generated image of star counter](images/generated_preview_4.jpeg) 
-![Generated image of star counter](images/generated_preview_5.jpeg)
-
-
-More training data was used by generating images that were shifted and had color changes.  Keras.preprocessing library helped with this.  Look at /src/train_model_code/preprocess.py for more information
-
-### Fast screenshot tools tested
-
-* PIL library - PIL library comes with a screenshot utility
-* MSS library - Was than PIL library, this is the current method used
-* win32 API - Supposed to be faster, could not get screenshots to work with this API
-
-
-### Current Application Speed
-
-
-The program is able to screenshot and classify how many stars you have in less than a frame. Super Mario 64 runs in 29.97 frames per second (NTSC)
-
-Taking a screenshot is the biggest bottleneck in the application speed.
-
-
-### Batch normalization, weight initialization
-
-Batch normalization, weight initialization, normalizing input helped in lowering training time
-
-
-## Model
-* 3 Convolution hidden layers with 32, 32, and 16 convolutions per layer
-* Max pooling after every convolution hidden layer
-* 1 Dense hidden layer with 128 units after convolution and pooling layers
-* Relu for hidden layers, Softmax for output
-* Batch normalization after every hidden layer, he uniform weight initialization
-* L2 Regularization 0.0001
-* Loss function: Categorical Cross entropy
-* Optimizer: Nadam, learning rate of 0.0006
-
-
-### Results
-
-In the final version of the model, it classified with an accuracy of over 99%.  The model provided was trained until validation loss would no longer decrease.
-
-The application works well when running in real time.  
-
-
+Information on training can be found [here](https://github.com/gcervantes8/Star-Classifier-For-Mario-64/blob/master/src/train_model_code/README.md)
 
 ## Author
 Gerardo Cervantes
