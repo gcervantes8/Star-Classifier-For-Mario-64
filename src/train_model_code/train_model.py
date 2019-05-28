@@ -1,5 +1,4 @@
 #Gerardo Cervantes
-
 import numpy as np
 
 #Module in src folder to load images
@@ -28,7 +27,7 @@ import os
 def add_nn_Layers(model):
 	
     reg = 0.0001
-    dropout = 0.1
+    dropout = 0.2
     model.add(Conv2D(32, (3, 3), input_shape=(40, 67, 3), kernel_initializer='he_uniform', kernel_regularizer=regularizers.l2(reg))) #200, 350 ; #30, 52
     model.add(Dropout(dropout))
     model.add(advanced_activations.PReLU(weights=None, alpha_initializer='zero'))
@@ -61,7 +60,7 @@ def add_nn_Layers(model):
     model.add(Dropout(dropout))
     model.add(BatchNormalization())
 
-    model.add(Dense(123, activation = 'softmax', kernel_initializer='he_uniform', kernel_regularizer=regularizers.l2(reg))) #Output layer, so 121 since 0 to 120 stars bnoth 0 and 120 inclusive
+    model.add(Dense(122, activation = 'softmax', kernel_initializer='he_uniform', kernel_regularizer=regularizers.l2(reg))) #Output layer, so 121 since 0 to 120 stars bnoth 0 and 120 inclusive, last class if for non star-numbers
 
     return model
 
@@ -105,7 +104,7 @@ def classifyMarioStar(x_train, y_train, x_test, y_test, save_model_name):
                   optimizer=optimizers.Nadam(lr=0.0020), #0.0012 before
                   metrics=['accuracy'])
     
-    nEpochs = 15
+    nEpochs = 100
     batchSize = 128
     print('Model summary')
     model.summary()
@@ -123,11 +122,11 @@ def classifyMarioStar(x_train, y_train, x_test, y_test, save_model_name):
 
 if __name__ == "__main__":
     
-    main_path = r'E:\MarioStarClassifier/'
+    main_path = r'/home/mario/MarioData/'
     train_players = ['honey14450', 'caivs15818', 'puncayshun_120_13949',
                      'viro14421', 'batora13953',
                      'dwhatever14159', 'mitagi14445',
-                     'gohanie14445', 'erumo14949', 'ZDez_120_1-46-19', 'honey14450']
+                     'gohanie14445', 'erumo14949', 'ZDez_120_1-46-19', 'honey14450', 'gana6414608']
     
     test_players = ['halliinen_14347']
     #r'E:\MarioStarClassifier\train_images'
@@ -139,10 +138,10 @@ if __name__ == "__main__":
     
     
     test_train_split = 0.15
-    n_train_imgs = 20 #Number of train images per class
+    n_train_imgs = 300 #Number of train images per class
     n_test_imgs = n_train_imgs * test_train_split
     
-    save_model_name = '../../models/Model-imgs_perclass' + str(n_train_imgs) + 'epochs15_small_nn'
+    save_model_name = '../../models/Model-imgs_perclass' + str(n_train_imgs) + 'epochs100_preprocess_to_122_prob_final'
     x_train, y_train = get_images(train_images_paths, n_train_imgs, True)
     print('Done getting train images')
     
@@ -157,7 +156,7 @@ if __name__ == "__main__":
     else:
         #Splits training data to test and train data
         x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size = test_train_split) 
-    
+
     classifyMarioStar(x_train, y_train, x_test, y_test, save_model_name)
 
 
