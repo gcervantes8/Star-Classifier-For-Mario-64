@@ -21,7 +21,7 @@ def get_images(directory_paths, images_per_star, is_full_game_screenshot):
     from preprocess import preview_images, no_modifications_generator
     paths, labels = get_image_paths(directory_paths, images_per_star)
     print('Got paths')
-    preprocess_images = False
+    preprocess_images = True
     #List of pil_images
     images = pil_images_from_paths(paths, is_full_game_screenshot, preprocess_images)
     
@@ -76,21 +76,22 @@ def get_image_paths(directory_paths, images_per_star):
     
     paths = []
     star_numbers = []
+    n_classes = 122
     subdirectory_paths = glob(directory_paths[0] +'/*/') #Uses first main directory path to find how many star directories there are
     from os import path
-    for star_directory in subdirectory_paths:
+    for class_num in range(n_classes):
         
-        star_dir_name = path.basename(path.dirname(star_directory))
+        #star_dir_name = path.basename(path.dirname(star_directory))
         
-        try:
-            star_number = int(star_dir_name)
-        except ValueError:
-            print('Folder name with images should be the star number,'
-                + ' no images taken from folder named: ' + star_dir_name)
-            continue;
+        #try:
+        #    star_number = int(star_dir_name)
+        #except ValueError:
+        #    print('Folder name with images should be the star number,'
+        #        + ' no images taken from folder named: ' + star_dir_name)
+        #    continue
         
-        print(star_number)
-        star_directories = [path.join(main_paths, star_dir_name) for main_paths in directory_paths]
+        print(class_num)
+        star_directories = [path.join(main_paths, str(class_num)) for main_paths in directory_paths]
             
         
         #Retrieves all images from subdirectory
@@ -98,9 +99,9 @@ def get_image_paths(directory_paths, images_per_star):
         
         n_paths = np.size(image_paths, axis = 0)
         
-        star_numbers += [star_number] * n_paths
+        star_numbers += [class_num] * n_paths
         paths += image_paths
-    return np.array(paths), one_hot_representation(star_numbers, 123)
+    return np.array(paths), one_hot_representation(star_numbers, n_classes)
 
 #From a star directory, returns path to images from the subdirectories.
 #The algorithm tries to get equal amount #of images from each subdirectory,
