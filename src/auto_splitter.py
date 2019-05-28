@@ -17,7 +17,7 @@ import time
 class AutoSplitter():
     
     #Default model
-    model_path = 'models/sm64Model6.hdf5'
+    model_path = 'models/sm64Model7.hdf5'
     
     splitting_program = 'LiveSplit'
     
