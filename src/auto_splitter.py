@@ -32,14 +32,15 @@ class AutoSplitter():
     game_fps = 29.97
     time_per_pred = error_frames * (1/game_fps)
     
-    #Module to take screenshots
-    screenshot_taker = ScreenshotTaker()
+    autoreset_toggle = True
+    
+    _screenshot_taker = ScreenshotTaker()
     
     
     #For a split to happen, the prediction has to be higher than the threshold (between 0 and 1)
-    split_threshold = 0.6
+    split_threshold = 0.7
     #For a reset to happen, the prediction has to be higher than the threshold (between 0 and 1)
-    reset_threshold = 0.8
+    reset_threshold = 0.95
 
     def __init__(self):
         self.is_running = False
@@ -84,9 +85,11 @@ class AutoSplitter():
         if not is_finished:
             aim_split = split_nums.pop(0) #Split classifier should look for, if -1 then should look for fadeouts
             aim_fadeout = fadeout_nums.pop(0)
-            
+        
+        reset_split = aim_split
         pred = -1 #Initial prediction to display
             
+        passed_first_class = False #Used for resetting
         print('About to run')
         while self.is_running and not is_finished:
             
@@ -103,6 +106,9 @@ class AutoSplitter():
                 run_time += pred_time
                 if pred == aim_split and pred_prob >= self.split_threshold:
                     aim_split = -1
+                if pred != reset_split and pred != aim_split and aim_split != -1 and pred != 121 and pred_prob >= self.split_threshold:
+                    passed_first_class = True
+                
             #Else is looking for fadeouts
             else:
                 pred_prob, pred = -1, -1
@@ -133,14 +139,27 @@ class AutoSplitter():
                 run_time += sleep_time
                 is_finished = split_nums == [] or fadeout_nums == []
                 if not is_finished:
-                    aim_split = split_nums.pop(0) #Split classifier should look for, if -1 then should look for fadeouts
+                    #Split classifier should look for, if -1 then should look for fadeouts
+                    aim_split = split_nums.pop(0) 
                     aim_fadeout = fadeout_nums.pop(0)
             else:
                 if is_white_fadeout or is_black_fadeout:
                     time.sleep(sleep_time)
                     run_time += sleep_time
                     is_black_fadeout, is_white_fadeout = False, False
+                elif self.autoreset_toggle and passed_first_class:
+                    if not is_looking_to_classify:
+                        pred, pred_prob, pred_time = classify(pil_img, model)
+                        run_time += pred_time
                     
+                    if pred == reset_split and pred_prob >= self.reset_threshold:
+                        split_nums, fadeout_nums = route.get_category_split_info()
+                        aim_split = split_nums.pop(0) 
+                        aim_fadeout = fadeout_nums.pop(0)
+                        passed_first_class = False
+                        split(self.splitting_program, reset_key, 0) 
+                        print('reset')
+                        time.sleep(0.03)
             #If finished early, put thread in waiting until self.time_per_pred has elapsed
             self._sleep_between_predictions(run_time)
         self.is_running = False
@@ -148,7 +167,7 @@ class AutoSplitter():
         
     def take_screenshot_and_resize(self):
         x, y, width, height = self.coordinates.get_coordinates()
-        pil_img, screenshot_time = self.screenshot_taker.screenshot_mss(x, y, width, height)
+        pil_img, screenshot_time = self._screenshot_taker.screenshot_mss(x, y, width, height)
         start_time = time.time()
         pil_img = resize_image(pil_img)
         resize_time = time.time() - start_time

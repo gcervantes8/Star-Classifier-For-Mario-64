@@ -132,7 +132,7 @@ class MainWindow(tk.Frame):
         self.save_classifier_preferences(self.PREFERENCES_FILE_NAME)
         
     def popup_msg(self, title, msg):
-        messagebox.showwarning("Warning","Route not found")
+        messagebox.showwarning(title, msg)
     
     #Key is the name of the route, value is the class
     def create_route_dictionary(self, routes):
