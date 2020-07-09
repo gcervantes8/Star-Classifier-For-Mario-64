@@ -59,8 +59,8 @@ class InputSplitKeys(tk.Frame):
         self.split_frame, self.split_label, self.split_button, self.split_stringvar = self.create_label_button_pair(split_keys_frame, ' Split Key ', self.split_button_pressed)
         self.reset_frame, self.reset_label, self.reset_button, self.reset_springvar = self.create_label_button_pair(split_keys_frame, 'Reset Key', self.reset_button_pressed)
         
-        self.split_frame.grid(column = 0, row = 0)
-        self.reset_frame.grid(column = 0, row = 1)
+        self.split_frame.grid(column=0, row=0)
+        self.reset_frame.grid(column=0, row=1)
         
         if self.hotkeys != None:
             self.split_button.insert(0, self.hotkeys.get_split_key())
@@ -112,10 +112,10 @@ class InputSplitKeys(tk.Frame):
         self.entry_font.configure(size=size)
             
     def set_alt_color(self, color):
-        self.split_label.configure(background = color)
-        self.reset_label.configure(background = color)
-        self.split_button.configure(background = color)
-        self.reset_button.configure(background = color)
+        self.split_label.configure(background=color)
+        self.reset_label.configure(background=color)
+        self.split_button.configure(background=color)
+        self.reset_button.configure(background=color)
         
     def change_text_font(self, font_family):
         self.font.configure(family=font_family)
