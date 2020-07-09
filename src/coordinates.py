@@ -8,10 +8,10 @@ Created on Sat Aug 11 22:44:10 2018
 
 class Coordinates:
     
-    x = -1
-    y = -1
-    width = -1
-    height = -1
+    x = 0
+    y = 0
+    width = 200
+    height = 200
      
     def __init__(self):
         pass
