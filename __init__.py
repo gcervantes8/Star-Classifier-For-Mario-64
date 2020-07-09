@@ -88,17 +88,18 @@ class MainWindow(tk.Frame):
         split_keys_popup_button = tk.Button(master, text='Setup keys', width=13, font=self.font,
                                             command=self.popup_split_keys, background=self.CONFIG_BUTTON_COLORS,
                                             foreground=self.TEXT_COLOR)
-        manual_split_button = tk.Button(master, text="Manual\nSplit", command=self.manual_split)
+        manual_split_button = tk.Button(master, text='Manual Split', width=13, font=self.font, command=self.manual_split,
+                                        background=self.CONFIG_BUTTON_COLORS, foreground=self.TEXT_COLOR)
         self.progress_display_frame.config(borderwidth=2)
         
         self.select_route_frame.grid(column=0, row=0, columnspan=2, padx=5, pady=5)
         self.start_button.grid(column=0, row=1, columnspan=2, padx=5, pady=5)
         
-        self.progress_display_frame.grid(column=3, row=0, rowspan=2, padx=5, pady=5)  # , columnspan = 3, rowspan=3,
-        self.run_status_frame.grid(column=3, row=3, padx=0, pady=2)
-        set_coordinates_popup_button.grid(column=0, row=2, rowspan=2, padx=0, pady=1)
-        split_keys_popup_button.grid(column=1, row=2, rowspan=2, padx=0, pady=1)
-        manual_split_button.grid(column=2, row=2, rowspan=2, padx=0, pady=1)
+        self.progress_display_frame.grid(column=2, row=0, rowspan=3, padx=5, pady=5)
+        self.run_status_frame.grid(column=2, row=3, padx=0, pady=2)
+        set_coordinates_popup_button.grid(column=0, row=3, rowspan=2, padx=0, pady=1)
+        split_keys_popup_button.grid(column=1, row=3, rowspan=2, padx=0, pady=1)
+        manual_split_button.grid(column=0, row=5, rowspan=2, padx=0, pady=1)
         
         route_handler = RouteFileHandler()
         # Returns a list of route objects from route directory
@@ -188,7 +189,7 @@ class MainWindow(tk.Frame):
                 thread = Thread(target=self.start_auto_splitter, args=(route,))
                 thread.start()
             except KeyError:
-                self.popup_msg(self, 'Warning', 'Route not found')
+                self.popup_msg('Warning', 'Route not found')
 
     def manual_split(self):
         splitter = Splitter()

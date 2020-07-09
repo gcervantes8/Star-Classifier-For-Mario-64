@@ -34,8 +34,8 @@ class ProgressDisplayFrame(tk.Frame):
     def create_information_frame(self, master):
         info_frame = tk.Frame(master)
 
-        star_frame, _, self.star_label = self.create_labels_pair(info_frame, 'Aim split')
-        prediction_frame, _, self.prediction_label = self.create_labels_pair(info_frame, 'Aim fadeout')
+        star_frame, _, self.star_label = self.create_labels_pair(info_frame, 'Split at')
+        prediction_frame, _, self.prediction_label = self.create_labels_pair(info_frame, 'Fadeout')
         probability_frame, _, self.probability_label = self.create_labels_pair(info_frame, 'Certainty')
         time_frame, _, self.time_label = self.create_labels_pair(info_frame, 'Pred')
 
@@ -45,7 +45,7 @@ class ProgressDisplayFrame(tk.Frame):
         pady = 3
         star_frame.grid(column=0, row=0, padx=padx, pady=pady)
         prediction_frame.grid(column=0, row=1, padx=padx, pady=pady)
-        probability_frame.grid(column=0, row=2, padx=padx, pady=pady)
+        # probability_frame.grid(column=0, row=2, padx=padx, pady=pady)
         time_frame.grid(column=0, row=3, padx=padx, pady=pady)
 
         return info_frame

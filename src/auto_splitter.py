@@ -87,7 +87,7 @@ class AutoSplitter:
             aim_fadeout = fadeout_nums.pop(0)
         
         reset_split = aim_split
-        pred = -1 # Initial prediction to display
+        pred = -1  # Initial prediction to display
             
         passed_first_class = False # Used for resetting
         print('About to run')
@@ -97,7 +97,7 @@ class AutoSplitter:
             
             # Default values when doing a rapid split
             split_delay = 0
-            sleep_time = 0 # After splitting
+            sleep_time = 0  # After splitting
             
             is_looking_to_classify = aim_split != -1
             # If not looking for fadeouts
@@ -133,7 +133,7 @@ class AutoSplitter:
             is_split = aim_fadeout == 0 and aim_split == -1
                         
             if is_split:
-                self.splitter.split(self.splitting_program, split_key, split_delay)  
+                self.splitter.split(split_key, split_delay)
                 time.sleep(sleep_time)
                 run_time += sleep_time
                 is_finished = split_nums == [] or fadeout_nums == []
@@ -156,7 +156,7 @@ class AutoSplitter:
                         aim_split = split_nums.pop(0) 
                         aim_fadeout = fadeout_nums.pop(0)
                         passed_first_class = False
-                        self.splitter.split(self.splitting_program, reset_key, 0)
+                        self.splitter.split(reset_key, 0)
                         print('reset')
                         time.sleep(0.03)
             # If finished early, put thread in waiting until self.time_per_pred has elapsed
@@ -166,7 +166,7 @@ class AutoSplitter:
         
     def take_screenshot_and_resize(self):
         x, y, width, height = self.coordinates.get_coordinates()
-        pil_img, screenshot_time = self._screenshot_taker.screenshot_mss(x, y, width, height)
+        pil_img, screenshot_time = AutoSplitter._screenshot_taker.screenshot_mss(x, y, width, height)
         start_time = time.time()
         pil_img = resize_image(pil_img)
         resize_time = time.time() - start_time
