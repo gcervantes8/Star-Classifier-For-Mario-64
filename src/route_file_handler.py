@@ -20,8 +20,11 @@ class RouteFileHandler:
     # Returns Route object given a path to a .route file in JSON format
     # Returns None if route couldn't be parsed
     def parse_json_route(self, route_file_path):
-        with open(route_file_path, "r") as read_file:
-            route_dict = json.load(read_file)
+        try:
+            with open(route_file_path, "r") as read_file:
+                route_dict = json.load(read_file)
+        except json.decoder.JSONDecodeError:
+            return None
         game_name = self._read_key(route_dict, 'Game name')
         route_name = self._read_key(route_dict, 'Route name')
         splits = self._read_key(route_dict, 'Splits')
