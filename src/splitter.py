@@ -11,6 +11,7 @@ import time
 from threading import Thread
 import win32gui
 
+
 # TODO Capslock and Shift are strange, and can sometimes sends the key 3 times (look into wsh docs)
 class Splitter:
     

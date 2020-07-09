@@ -2,13 +2,14 @@
 """
 Created on Sun Aug 12 16:13:21 2018
 
-@author: Jerry C
+@author: Gerardo Cervantes
 """
 
-class Hotkeys():
+
+class Hotkeys:
     
     split_key = '{PGUP}'
-    reset_key = ''
+    reset_key = '{PGDN}'
      
     def __init__(self):
         pass

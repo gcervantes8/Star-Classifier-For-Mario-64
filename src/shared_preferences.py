@@ -10,7 +10,6 @@ from src.coordinates import Coordinates
 from src.hotkeys import Hotkeys
 
 
-
 class SharedPreferences():
     
     COORDINATES_TAG = 'coordinates'
@@ -22,14 +21,13 @@ class SharedPreferences():
         xml_str = self.create_xml(coordinates, route_name, hotkeys)        
         with open(file_name, "wb") as f:
             f.write(xml_str)
-            
-    
+
     def create_xml(self, coordinates, route_name, hotkeys):
         root = ET.Element("root") 
         
         ET.SubElement(root, self.ROUTE_TAG).text = self.to_valid_xml_str(route_name)
         ET.SubElement(root, self.SPLIT_TAG).text = self.to_valid_xml_str(hotkeys.get_split_key())
-        ET.SubElement(root, self.RESET_TAG).text =self.to_valid_xml_str(hotkeys.get_reset_key())
+        ET.SubElement(root, self.RESET_TAG).text = self.to_valid_xml_str(hotkeys.get_reset_key())
         
         xml_coordinates = ET.SubElement(root, self.COORDINATES_TAG)
         x, y, width, height = coordinates.get_coordinates()
@@ -71,13 +69,7 @@ class SharedPreferences():
         hotkeys.set_reset_key(reset_key)
         
         return coordinates, route_name, hotkeys
-        
-#    def xml_print(self, xml_str):
-#        #Only needed to print as pretty xml
-#        import xml.dom.minidom
-#        xml_dom = xml.dom.minidom.parseString(xml_str)
-#        pretty_xml_as_string = xml_dom.toprettyxml()
-#        print(pretty_xml_as_string)
+
         
 if __name__ == "__main__":
     shared_prefs = SharedPreferences()

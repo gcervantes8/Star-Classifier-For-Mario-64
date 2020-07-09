@@ -23,10 +23,11 @@ class CaptureKeys:
             k = self.to_windows_key(key)
         if key == keyboard.Key.esc:
             return 'Esc'  # stop listener
-        print('Key pressed: ' + k)
+        print('Key pressed: ' + str(k))
         if self.fn:
             self.fn(k)
-        return True  # remove this if want more keys
+        return False
+        # return True  # remove this if want more keys
     
     def capture_key(self):
         lis = keyboard.Listener(on_press=self._on_press)

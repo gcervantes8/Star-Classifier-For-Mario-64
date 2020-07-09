@@ -8,18 +8,17 @@ Created on Sun Aug 16
 import json
 from src.route import Route
 
-class RouteFileHandler():
-    
-   #Route description
-   
-   #Game name - is the name of the game
-   #Route name - is the name of the route
-   #Splits - are the splits it will split at, after enough fadeouts are encountered, then splits
-   #Fadeout counts - The number of fadeouts
-                     #Turn number to negative to split at a white fadeout
+class RouteFileHandler:
+    # Route description
+
+    # Game name - is the name of the game
+    # Route name - is the name of the route
+    # Splits - are the splits it will split at, after enough fadeouts are encountered, then splits
+    # Fadeout counts - The number of fadeouts
+    #                   Turn number to negative to split at a white fadeout
   
-    #Returns Route object given a path to a .route file in JSON format
-    #Returns None if route couldn't be parsed
+    # Returns Route object given a path to a .route file in JSON format
+    # Returns None if route couldn't be parsed
     def parse_json_route(self, route_file_path):
         with open(route_file_path, "r") as read_file:
             route_dict = json.load(read_file)
@@ -28,7 +27,7 @@ class RouteFileHandler():
         splits = self._read_key(route_dict, 'Splits')
         fade_nums = self._read_key(route_dict, 'Fadeout counts')
         
-        #Converts json input (string) to a list of integers
+        # Converts json input (string) to a list of integers
         try:
             splits = [int(s) for s in splits.split(',')]
         except ValueError:
@@ -52,8 +51,8 @@ class RouteFileHandler():
             print('Could not find in route' + key)
         return None
     
-    #Finds files ending with .route extension and creates a route object from files
-    #Returns a list of Route objects that are initialized
+    # Finds files ending with .route extension and creates a route object from files
+    # Returns a list of Route objects that are initialized
     def get_routes_from_directory(self, dir_path):
         routes = []
         from os import listdir
@@ -65,7 +64,8 @@ class RouteFileHandler():
                 if route != None:
                     routes.append(route)
         return routes
-        
+
+
     def write_json_route(self, file_name, game_name, route_name, splits, fade_nums):
         route_dict = {}
         route_dict['Game name'] = game_name
@@ -76,13 +76,12 @@ class RouteFileHandler():
 #        route_dict['Fadeout counts'] = fade_nums
 #        route_dict['Ordered'] = is_ordered
 #        route_dict.write(simplejson.dumps(simplejson.loads(output), indent=4, sort_keys=True))
-        
-        
+
         with open(file_name, "w") as write_file:
             json.dump(route_dict, write_file, indent = 4)
   
                 
-#Used to create a 70 star route file
+# Used to create a 70 star route file
 def route_70_star():
     file_name = '70_star_pro.route'
     game_name = 'Super Mario 64'
@@ -91,6 +90,7 @@ def route_70_star():
     fade_nums = [0, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] 
     
     return file_name, game_name, route_name, splits, fade_nums
+
 
 def route_16_nonlblj_star():
     file_name = '16_star_nonlblj.route'
@@ -101,6 +101,7 @@ def route_16_nonlblj_star():
     
     return file_name, game_name, route_name, splits, fade_nums
 
+
 def route_16_star_pro():
     file_name = '16_star_pro.route'
     game_name = 'Super Mario 64'
@@ -109,6 +110,7 @@ def route_16_star_pro():
     fade_nums = [0, 2, 2, 1, 1, 1, 1, -1, 1, 3, 4] 
     
     return file_name, game_name, route_name, splits, fade_nums
+
 
 if __name__ == "__main__":
     route_handler = RouteFileHandler()

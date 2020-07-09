@@ -3,7 +3,7 @@
 
 @author: Gerardo Cervantes
 """
-from PIL import Image, ImageGrab
+from PIL import Image
 
 from mss import mss
 import time
@@ -25,7 +25,7 @@ class ScreenshotTaker:
 
         monitor = {'top': y, 'left': x, 'width': width, 'height': height}
 
-        sct_img = ScreenshotTaker.grab(monitor)
+        sct_img = ScreenshotTaker.sct.grab(monitor)
     
         # Create the Image, converts to PIL, probably not needed for speed, but simplifies crop and resize
         img = Image.frombytes('RGB', sct_img.size, sct_img.rgb)

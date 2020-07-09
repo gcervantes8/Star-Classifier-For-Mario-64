@@ -5,22 +5,23 @@ Created on Thu Aug 16 10:31:36 2018
 @author: Gerardo Cervantes
 """
 
-class Route():
+
+class Route:
     
     game = 'Unknown game'
     name = 'Invalid route'
     splits = [] 
     fadeout_nums = []
         
-    #Create route object, default values are kept if given items are None
-    #If fade_nums is empty or smaller than splits, fills with values to make it split immediately
+    # Create route object, default values are kept if given items are None
+    # If fade_nums is empty or smaller than splits, fills with values to make it split immediately
     def __init__(self, game_name, route_name, splits, fade_nums):
         if game_name != None:
             self.game = game_name
         if route_name != None:
             self.name = route_name
         
-        #Append fade_nums with 0's (split immediately) if not same size as splits
+        # Append fade_nums with 0's (split immediately) if not same size as splits
         diff = len(splits) - len(fade_nums)
         if diff > 0:
             fade_nums = fade_nums + ([0] * diff )
