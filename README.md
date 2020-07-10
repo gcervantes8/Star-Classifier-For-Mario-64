@@ -5,7 +5,7 @@ Can auto-split by recognizing how many stars you have in the game.  A deep learn
 
 ## Release
 
-Latest release (v0.95) can be found [here](https://github.com/gcervantes8/Star-Classifier-For-Mario-64/releases)
+Latest release (v0.96) can be found [here](https://github.com/gcervantes8/Star-Classifier-For-Mario-64/releases)
 
 
 
@@ -120,17 +120,20 @@ After getting star 13, there is 1 fadeout that occurs after you go down the bows
 
 
 ## To run from source code
+[\_\_init\_\_.py](__init__.py) starts the program
 
-\_\_init\_\_.py starts the program
+BUILD.bat on Windows will build the .exe (needs Python 3.5 to 3.7 in your PATH and pip)
 
 Requirements:
-* Python 3.6
-* Tensorflow library - Comes with numpy (other backend library like Theano can be used but wasn't tested on)
-* Keras library
-* MSS library
-* Pillow Library
-* pyautogui library
-* pywin32
+* Python 3.5 - 3.7
+* Python Libraries
+  * Tensorflow
+  * Keras
+  * MSS
+  * Pillow
+  * pyautogui
+  * pypiwin32
+  * pynput
 
 Information on training can be found [here](https://github.com/gcervantes8/Star-Classifier-For-Mario-64/blob/master/src/train_model_code/README.md)
 
