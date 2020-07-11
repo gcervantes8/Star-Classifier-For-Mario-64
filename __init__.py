@@ -62,7 +62,7 @@ class MainWindow(tk.Frame):
         self.font = Font(family=self.FONT, size=self.FONT_SIZE, weight='bold')
 
         # Creates frames
-        self.title_bar = TitleBar(master, width=325)
+        self.title_bar = TitleBar(master, width=345)
         self.progress_display_frame = ProgressDisplayFrame(master)
         self.select_route_frame = DropdownFrame(master)
         self.run_status_frame = RunStatusFrame(master)

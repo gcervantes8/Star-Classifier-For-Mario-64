@@ -6,6 +6,8 @@
 
 import tkinter as tk
 from tkinter.font import Font
+from gui.title_bar import TitleBar
+from gui.make_draggable import Draggable
 
 from PIL import ImageTk, Image
 import pyautogui
@@ -33,27 +35,31 @@ class PreviewImageFrame(tk.Frame):
     FONT_SIZE = 20
     FONT = 'Arial'
 
-    def __init__(self, master):
+    def __init__(self, master, custom_title_bar=True):
         self.root = master
         tk.Frame.__init__(self, master)
 
+        if custom_title_bar:
+            self.title_bar = TitleBar(self, window_root=master, width=170, height=5)
+            self.title_bar.grid(column=0, row=0, rowspan=1, columnspan=1, padx=2, pady=1)
+        self.draggable = Draggable(self, master)
         self.font = Font(family=self.FONT, size=self.FONT_SIZE, weight='bold')
         self.entry_font = Font(family=self.FONT, size=self.FONT_SIZE)
         self.screenshot_instance = ScreenshotTaker()
 
         preview_image_widget = self.create_preview_image(self)
-        preview_image_widget.grid(column=0, row=0, padx=1, pady=5)
-
+        preview_image_widget.grid(column=0, row=1, padx=1, pady=5)
+        self.draggable = Draggable(preview_image_widget, master)
         self.set_sizes_frame = self.create_set_sizes_frame(self)
-        self.set_sizes_frame.grid(column=0, row=1)
+        self.set_sizes_frame.grid(column=0, row=2)
 
         preview_button = tk.Button(self, text='Preview', background='#4286f4', font=self.font)
-        preview_button.grid(column=0, row=2, padx=1, pady=5)
+        preview_button.grid(column=0, row=3, padx=1, pady=5)
         preview_button.config(command=self.preview_button_clicked)
 
         self.mouse_coord_stringvar = tk.StringVar()
         self.mouse_coord_label = tk.Label(self, textvariable=self.mouse_coord_stringvar, font=self.font)
-        self.mouse_coord_label.grid(column=0, row=3, padx=1, pady=5)
+        self.mouse_coord_label.grid(column=0, row=4, padx=1, pady=5)
 
         self.poll_mouse_coordinates()
 

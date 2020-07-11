@@ -20,18 +20,21 @@ class TitleBar(tk.Frame):
     CLOSE_BTN_HOVER_COLOR = 'red'
     MIN_BTN_HOVER_COLOR = 'gray'
     FONT_COLOR = 'white'
-    FONT_SIZE = 13
+    FONT_SIZE = 10
     FONT = 'Arial'
 
-    def __init__(self, master, width=425, height=35, icon_path=ICON_IMG_PATH):
+    def __init__(self, master, window_root=None, width=425, height=25, icon_path=ICON_IMG_PATH):
         self.root = master
+        if not window_root:
+            window_root = master
+        self.window_root = window_root
         tk.Frame.__init__(self, master)
         self.configure(background=self.COLOR)
         font = Font(family=self.FONT, size=self.FONT_SIZE)
         button_widths = 5
         button_heights = 1
         # put a close button on the title bar
-        self.close_button = tk.Button(self, text='X', command=self.root.destroy, bg=self.COLOR, fg=self.FONT_COLOR,
+        self.close_button = tk.Button(self, text='X', command=self.window_root.destroy, bg=self.COLOR, fg=self.FONT_COLOR,
                                       font=font, height=button_heights, width=button_widths, borderwidth=1)
         self.close_button.bind("<Enter>", self.close_btn_hover_enter)
         self.close_button.bind("<Leave>", self.close_btn_hover_leave)
@@ -46,12 +49,13 @@ class TitleBar(tk.Frame):
         self.canvas = tk.Frame(self, bg=self.COLOR, width=width, height=height)
 
         self.image_label.grid(column=0, row=0, padx=5, pady=5)
+        self.canvas.grid(column=1, row=0, padx=0, pady=0)
         self.min_button.grid(column=2, row=0, padx=0, pady=1)
         self.close_button.grid(column=3, row=0, padx=0, pady=1)
-        self.canvas.grid(column=1, row=0, padx=0, pady=0)
 
-        self.canvas_draggable = Draggable(self.canvas, self.root)
-        self.image_draggable = Draggable(self.image_label, self.root)
+        self.draggable = Draggable(self, self.window_root)
+        self.canvas_draggable = Draggable(self.canvas, self.window_root)
+        self.image_draggable = Draggable(self.image_label, self.window_root)
 
         self.delay_set_appwindow(None)
 
@@ -59,7 +63,7 @@ class TitleBar(tk.Frame):
     # Adds icon to taskbar, then calls frame_mapped, which turns off default title_bar
     def set_appwindow(self, event):
         self.unbind('<Map>')
-        self.root.overrideredirect(True)
+        self.window_root.overrideredirect(True)
 
         gwl_exstyle = -20
         ws_ex_appwindow = 0x00040000
@@ -71,9 +75,9 @@ class TitleBar(tk.Frame):
         style = style | ws_ex_appwindow
         res = windll.user32.SetWindowLongPtrW(hwnd, gwl_exstyle, style)
         # re-assert the new window style
-        self.root.wm_withdraw()
+        self.window_root.wm_withdraw()
         self.frame_mapped()
-        self.root.after(5, lambda: self.root.wm_deiconify())
+        self.root.after(5, lambda: self.window_root.wm_deiconify())
         self.root.after(10, lambda: self.bind('<Map>', self.delay_set_appwindow))
 
     def delay_set_appwindow(self, event):
@@ -95,7 +99,7 @@ class TitleBar(tk.Frame):
 
         pil_image = Image.open(icon_path)
 
-        pil_image = pil_image.resize((25, 25), Image.ANTIALIAS)  # Width,height
+        pil_image = pil_image.resize((20, 20), Image.ANTIALIAS)  # Width,height
         photo_image = ImageTk.PhotoImage(pil_image)
 
         photo_image_label = tk.Label(self, image=photo_image)
@@ -105,14 +109,14 @@ class TitleBar(tk.Frame):
 
     # https://stackoverflow.com/questions/52714026/python-tkinter-restore-window-without-title-bar
     def frame_mapped(self):
-        self.root.update_idletasks()
-        self.root.state('normal')
-        self.root.overrideredirect(True)
+        self.window_root.update_idletasks()
+        self.window_root.state('normal')
+        self.window_root.overrideredirect(True)
 
     def minimize(self):
-        self.root.update_idletasks()
-        self.root.overrideredirect(False)
-        self.root.state('iconic')
+        self.window_root.update_idletasks()
+        self.window_root.overrideredirect(False)
+        self.window_root.state('iconic')
 
 
 if __name__ == "__main__":
