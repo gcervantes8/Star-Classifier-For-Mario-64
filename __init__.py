@@ -13,6 +13,8 @@ from gui.dropdown_frame import DropdownFrame
 from gui.run_status_frame import RunStatusFrame
 from gui.input_split_keys_frame import InputSplitKeys
 from gui.start_button_frame import StartButtonFrame
+from gui.title_bar import TitleBar
+from gui.make_draggable import Draggable
 
 from threading import Thread
 
@@ -37,7 +39,7 @@ class MainWindow(tk.Frame):
     icon_path = 'images/icon.png'
     routes_directory = 'routes/'
     
-    BG_COLOR = '#192133'  # '#131926'
+    BG_COLOR = '#192133'
     ALT_BG_COLOR = '#263863'
     TEXT_COLOR = '#edebea'
     BLACK_TEXT_COLOR = '#000a23'
@@ -46,21 +48,21 @@ class MainWindow(tk.Frame):
     CONFIG_BUTTON_COLORS = '#0f913a'
     DROPDOWN_COLOR = ALT_BG_COLOR
     START_BUTTON_COLOR = '#dbb015'
-    
+
     def __init__(self, master):
         tk.Frame.__init__(self, master)
         self.root = master
         self.auto_splitter = AutoSplitter()
         self.shared_preferences = SharedPreferences()
-        
         self.coordinates, self.route_name, self.hotkeys = self.read_preferences(self.PREFERENCES_FILE_NAME)
         master.configure(background=self.BG_COLOR)
         self.configure(background=self.BG_COLOR)
         self._init_preferences()
-
+        self.draggable = Draggable(self.root, self.root)
         self.font = Font(family=self.FONT, size=self.FONT_SIZE, weight='bold')
-        
+
         # Creates frames
+        self.title_bar = TitleBar(master, width=325)
         self.progress_display_frame = ProgressDisplayFrame(master)
         self.select_route_frame = DropdownFrame(master)
         self.run_status_frame = RunStatusFrame(master)
@@ -91,16 +93,16 @@ class MainWindow(tk.Frame):
         manual_split_button = tk.Button(master, text='Manual Split', width=13, font=self.font, command=self.manual_split,
                                         background=self.CONFIG_BUTTON_COLORS, foreground=self.TEXT_COLOR)
         self.progress_display_frame.config(borderwidth=2)
+
+        self.title_bar.grid(column=0, row=0, rowspan=1, columnspan=3, padx=2, pady=1)
+        self.select_route_frame.grid(column=0, row=1, columnspan=2, padx=5, pady=5)
+        self.start_button.grid(column=0, row=2, columnspan=2, padx=5, pady=5)
         
-        self.select_route_frame.grid(column=0, row=0, columnspan=2, padx=5, pady=5)
-        self.start_button.grid(column=0, row=1, columnspan=2, padx=5, pady=5)
-        
-        self.progress_display_frame.grid(column=2, row=0, rowspan=3, padx=5, pady=5)
-        self.run_status_frame.grid(column=2, row=3, padx=0, pady=2)
-        set_coordinates_popup_button.grid(column=0, row=3, rowspan=2, padx=0, pady=1)
-        split_keys_popup_button.grid(column=1, row=3, rowspan=2, padx=0, pady=1)
-        manual_split_button.grid(column=0, row=5, rowspan=2, padx=0, pady=1)
-        
+        self.progress_display_frame.grid(column=2, row=1, rowspan=3, padx=5, pady=5)
+        self.run_status_frame.grid(column=2, row=4, padx=0, pady=2)
+        set_coordinates_popup_button.grid(column=0, row=4, rowspan=2, padx=0, pady=1)
+        split_keys_popup_button.grid(column=1, row=4, rowspan=2, padx=0, pady=1)
+        manual_split_button.grid(column=0, row=6, rowspan=2, padx=0, pady=1)
         route_handler = RouteFileHandler()
         # Returns a list of route objects from route directory
         routes = route_handler.get_routes_from_directory(self.routes_directory)
@@ -226,6 +228,7 @@ if __name__ == "__main__":
     root.title('Star Classifier')
     app = MainWindow(root)
     root.protocol("WM_DELETE_WINDOW", app.on_closing)
+    root.state('normal')
     app.load_icon(app.icon_path, root)
     root.mainloop()
     root.quit()
