@@ -178,7 +178,7 @@ class MainWindow(tk.Frame):
     # param was_running should be true if the neural network was running
     def start_clicked(self, was_running):
         # Route used is the one that was selected
-        self.route_name = self.select_route_frame.stringvar.get()
+        self.route_name = self.select_route_frame.get_selected_option()
         
         if was_running:
             self.auto_splitter.stop()
@@ -204,9 +204,9 @@ class MainWindow(tk.Frame):
                                  start_fn=self.run_status_frame.set_running)
 
     def save_classifier_preferences(self, file_name):
-        route_name = self.select_route_frame.stringvar.get()
+        route_name = self.select_route_frame.get_selected_option()
         self.shared_preferences.write_preferences(file_name, self.coordinates, route_name, self.hotkeys)
-        
+
     def read_preferences(self, file_name):
         coordinates, route_name, hotkeys = self.shared_preferences.parse_xml(file_name)
         return coordinates, route_name, hotkeys

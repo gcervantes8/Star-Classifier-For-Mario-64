@@ -20,42 +20,48 @@ class DropdownFrame(tk.Frame):
         tk.Frame.__init__(self, master)
         
         self.options = ['?']
-        self.drop_down = self.create_drop_down(self, self.options)
+        self._string_var = tk.StringVar(master)
+        self.drop_down = self.create_drop_down(self, self._string_var, self.options)
         self.drop_down.grid(column=0, row=0, columnspan=2)
         self.change_color(self.COLOR)
         self.font = Font(family=self.FONT, size=self.FONT_SIZE, weight='bold')
         self.drop_down.config(font=self.font)
+        self.drop_down.configure(highlightthickness=0)
         
-    def create_drop_down(self, master, OPTIONS):
-        
-        self.stringvar = tk.StringVar(master)
-        self.stringvar.set(OPTIONS[0])  # default value
-        self.drop_down = tk.OptionMenu(master, self.stringvar, *OPTIONS)
+    def create_drop_down(self, master, string_var, menu_options):
+
+        string_var.set(menu_options[0])  # default value is the first value
+        self.drop_down = tk.OptionMenu(master, string_var, *menu_options)
         return self.drop_down
     
-    # Options is the list of items it will set the dropdown as
+    # Options is the list of items it will set the drop-down as
     def set_drop_down_options(self, options):
         self.options = list(options)
         
-        self.stringvar.set(self.DEFAULT_VALUE)
+        self._string_var.set(self.DEFAULT_VALUE)
         self.drop_down['menu'].delete(0, 'end')
         for option in self.options:
-            self.drop_down['menu'].add_command(label=option, command=tk._setit(self.stringvar, option))
+            # Private command used to add options at run time
+            self.drop_down['menu'].add_command(label=option, command=tk._setit(self._string_var, option))
         
         if len(self.options) != 0:
-            self.stringvar.set(self.options[0])  # default value
+            self._string_var.set(self.options[0])  # default value
 
-    # Sets the given option if found in the list of options in the dropdown
+    # Sets the given option if found in the list of options in the drop-down menu
     def set_option(self, option_name):
         
         for option in self.options:
             if option_name == option:
-                self.stringvar.set(option)
+                self._string_var.set(option)
 
     def change_color(self, color):
         self.drop_down.configure(background=color)
         self.configure(background=color)
-        
+        self.drop_down['menu'].config(bg=color, fg='white', bd=0)
+
+    def get_selected_option(self):
+        return self._string_var.get()
+
     def change_text_color(self, color):
         self.drop_down.configure(fg=color)
         
