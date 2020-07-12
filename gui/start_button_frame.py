@@ -28,11 +28,11 @@ class StartButtonFrame(tk.Frame):
         # Creates the button
         self.button_text.set(self.START_TEXT)
         self.start_button = tk.Button(self, text=self.button_text, width=13)
-        self.start_button.grid(column=0, row=0, columnspan=2, padx=1, pady=1)
+        self.start_button.grid(column=0, row=0, columnspan=2, padx=0, pady=0)
 
-        fontsize = 20
+        font_size = 20
         font_type = 'Times New Roman'
-        self.font = Font(family=font_type, size=fontsize, weight='bold')
+        self.font = Font(family=font_type, size=font_size, weight='bold')
 
         self.start_button.config(command=self.button_handler, textvariable=self.button_text, background=self.COLOR,
                                  foreground='black', borderwidth=2, font=self.font)
@@ -41,8 +41,6 @@ class StartButtonFrame(tk.Frame):
     # Handler function will be given 2 params, the object and bool indicating if classifer was running before the click
     def set_button_action_handler(self, handler_fn):
         self.notify_fn = handler_fn
-
-    #        self.start_button.config(command = handler)
 
     def button_handler(self):
         if self.notify_fn:
