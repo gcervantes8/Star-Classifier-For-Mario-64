@@ -11,7 +11,7 @@ from gui.preview_image_frame import PreviewImageFrame
 from gui.progress_display_frame import ProgressDisplayFrame
 from gui.dropdown_frame import DropdownFrame
 from gui.run_status_frame import RunStatusFrame
-from gui.input_split_keys_frame import InputSplitKeys
+from gui.hotkeys_frame import HotkeysFrame
 from gui.start_button_frame import StartButtonFrame
 from gui.title_bar import TitleBar
 from gui.make_draggable import Draggable
@@ -23,7 +23,6 @@ from src.coordinates import Coordinates
 from src.hotkeys import Hotkeys
 from src.shared_preferences import SharedPreferences
 from src.route_file_handler import RouteFileHandler
-from src.splitter import Splitter
 
 
 class MainWindow(tk.Frame):
@@ -90,8 +89,6 @@ class MainWindow(tk.Frame):
         split_keys_popup_button = tk.Button(master, text='Setup keys', width=13, font=self.font,
                                             command=self.popup_split_keys, background=self.CONFIG_BUTTON_COLORS,
                                             foreground=self.TEXT_COLOR)
-        manual_split_button = tk.Button(master, text='Manual Split', width=13, font=self.font, command=self.manual_split,
-                                        background=self.CONFIG_BUTTON_COLORS, foreground=self.TEXT_COLOR)
         self.progress_display_frame.config(borderwidth=2)
 
         self.title_bar.grid(column=0, row=0, rowspan=1, columnspan=3, padx=2, pady=1)
@@ -102,7 +99,6 @@ class MainWindow(tk.Frame):
         self.run_status_frame.grid(column=2, row=4, padx=0, pady=2)
         set_coordinates_popup_button.grid(column=0, row=4, rowspan=2, padx=0, pady=1)
         split_keys_popup_button.grid(column=1, row=4, rowspan=2, padx=0, pady=1)
-        manual_split_button.grid(column=0, row=6, rowspan=2, padx=0, pady=1)
         route_handler = RouteFileHandler()
         # Returns a list of route objects from route directory
         routes = route_handler.get_routes_from_directory(self.routes_directory)
@@ -127,7 +123,7 @@ class MainWindow(tk.Frame):
         
     def popup_split_keys(self):
         popup_master = tk.Toplevel(self.root)
-        self.split_keys = InputSplitKeys(popup_master)
+        self.split_keys = HotkeysFrame(popup_master)
         self.split_keys.set_hotkeys(self.hotkeys)
         self.split_keys.set_bg_color(self.BG_COLOR)
         self.split_keys.set_alt_color(self.ALT_BG_COLOR)
@@ -192,11 +188,6 @@ class MainWindow(tk.Frame):
                 thread.start()
             except KeyError:
                 self.popup_msg('Warning', 'Route not found')
-
-    def manual_split(self):
-        splitter = Splitter()
-        split_key, _ = self.hotkeys.get_hotkeys()
-        splitter.split(split_key, 0)
 
     # Starts the image classifier
     def start_auto_splitter(self, route):
