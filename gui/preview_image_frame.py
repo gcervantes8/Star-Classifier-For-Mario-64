@@ -34,6 +34,7 @@ class PreviewImageFrame(tk.Frame):
 
     FONT_SIZE = 20
     FONT = 'Arial'
+    PREVIEW_BUTTON_COLOR = '#4286f4'
 
     def __init__(self, master, custom_title_bar=True):
         self.root = master

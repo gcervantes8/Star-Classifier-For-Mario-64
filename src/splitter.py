@@ -16,35 +16,35 @@ import win32gui
 class Splitter:
     
     wsh = None
+
+    # name of program it will send key to. Ex. 'LiveSplit'
     splitting_program = 'LiveSplit'
 
-    def __init__(self):
-        CoInitialize()
-        self.wsh = Dispatch("WScript.Shell")
-
     # This function blocks the calling thread
-    # program_name is the name of the program that will send the key to. Ex. 'LiveSplit'
-    # Split key is the key that will be given to the program to split, should be a str
-    # Split_wait_time is float of how long it should wait until it should split
-    def _split_helper(self, program_name, split_key, split_wait_time):
 
-        if not self.wsh:
+    # Split key is the key that will be given to the program to split (str)
+    # Split_wait_time is number of seconds it should wait until it'll split (float)
+    @staticmethod
+    def _split_helper(split_key, split_wait_time):
+
+        if not Splitter.wsh:
             print('WSH for splitter not initialized')
             CoInitialize()
-            self.wsh = Dispatch("WScript.Shell")
+            Splitter.wsh = Dispatch("WScript.Shell")
 
         if split_wait_time > 0:
             time.sleep(split_wait_time)
 
         active_hwnd = win32gui.GetForegroundWindow()
-        self.wsh.AppActivate('LiveSplit')  # select LiveSplit application
-        self.wsh.SendKeys(split_key)
+        Splitter.wsh.AppActivate(Splitter.splitting_program)  # select LiveSplit application
+        Splitter.wsh.SendKeys(split_key)
         win32gui.SetForegroundWindow(active_hwnd)
-        print('Program:' + program_name + '\nKey sent:' + split_key)
+        print('Program:' + Splitter.splitting_program + '\nKey sent:' + split_key)
 
     # This function splits in a new thread (Does not block calling thread)
     # Split key is the key that will be given to the program to split, should be a str
     # Split_wait_time is float of how long it should wait until it should split
-    def split(self, split_key, delay):
-        thread = Thread(target=self._split_helper, args=(Splitter.splitting_program, split_key, delay))
+    @staticmethod
+    def split(split_key, delay):
+        thread = Thread(target=Splitter._split_helper, args=(split_key, delay))
         thread.start()

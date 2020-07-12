@@ -32,7 +32,6 @@ class AutoSplitter:
     error_frames = 2
     game_fps = 29.97
     time_per_pred = error_frames * (1/game_fps)
-    splitter = Splitter()
     autoreset_toggle = True
     
     _screenshot_taker = ScreenshotTaker()
@@ -133,7 +132,7 @@ class AutoSplitter:
             is_split = aim_fadeout == 0 and aim_split == -1
                         
             if is_split:
-                self.splitter.split(split_key, split_delay)
+                Splitter.split(split_key, split_delay)
                 time.sleep(sleep_time)
                 run_time += sleep_time
                 is_finished = split_nums == [] or fadeout_nums == []
@@ -156,7 +155,7 @@ class AutoSplitter:
                         aim_split = split_nums.pop(0) 
                         aim_fadeout = fadeout_nums.pop(0)
                         passed_first_class = False
-                        self.splitter.split(reset_key, 0)
+                        Splitter.split(reset_key, 0)
                         print('reset')
                         time.sleep(0.03)
             # If finished early, put thread in waiting until self.time_per_pred has elapsed
