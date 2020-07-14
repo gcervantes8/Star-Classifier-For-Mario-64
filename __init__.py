@@ -83,12 +83,12 @@ class MainWindow(tk.Frame):
         self.progress_display_frame.change_text_size(self.FONT_SIZE)
         self.progress_display_frame.change_text_font(self.FONT)
 
-        set_coordinates_popup_button = tk.Button(master, text='Coordinates', width=13, font=self.font,
-                                                 command=self.popup_image_coordinates,
-                                                 background=self.CONFIG_BUTTON_COLORS, foreground=self.TEXT_COLOR)
-        split_keys_popup_button = tk.Button(master, text='Setup keys', width=13, font=self.font,
-                                            command=self.popup_split_keys, background=self.CONFIG_BUTTON_COLORS,
-                                            foreground=self.TEXT_COLOR)
+        self.coordinates_button = tk.Button(master, text='Coordinates', width=13, font=self.font,
+                                            command=self.popup_image_coordinates,
+                                            background=self.CONFIG_BUTTON_COLORS, foreground=self.TEXT_COLOR)
+        self.hotkeys_button = tk.Button(master, text='Setup keys', width=13, font=self.font,
+                                        command=self.popup_split_keys, background=self.CONFIG_BUTTON_COLORS,
+                                        foreground=self.TEXT_COLOR)
         self.progress_display_frame.config(borderwidth=2)
 
         self.title_bar.grid(column=0, row=0, rowspan=1, columnspan=3, padx=2, pady=1)
@@ -97,8 +97,8 @@ class MainWindow(tk.Frame):
         
         self.progress_display_frame.grid(column=2, row=1, rowspan=3, padx=5, pady=5)
         self.run_status_frame.grid(column=2, row=4, padx=0, pady=2)
-        set_coordinates_popup_button.grid(column=0, row=4, rowspan=2, padx=0, pady=1)
-        split_keys_popup_button.grid(column=1, row=4, rowspan=2, padx=0, pady=1)
+        self.coordinates_button.grid(column=0, row=4, rowspan=2, padx=0, pady=1)
+        self.hotkeys_button.grid(column=1, row=4, rowspan=2, padx=0, pady=1)
         route_handler = RouteFileHandler()
         # Returns a list of route objects from route directory
         routes = route_handler.get_routes_from_directory(self.routes_directory)
@@ -108,8 +108,13 @@ class MainWindow(tk.Frame):
     
     def popup_image_coordinates(self):
         popup_master = tk.Toplevel(self.root)
+        button_x = self.coordinates_button.winfo_x()
+        button_y = self.coordinates_button.winfo_y()
+        popup_window_x = int(self.root.winfo_x() + button_x + (self.coordinates_button.winfo_width()/2))
+        popup_window_y = int(self.root.winfo_y() + button_y + (self.coordinates_button.winfo_height()/2))
+        popup_master.geometry('+{0}+{1}'.format(popup_window_x, popup_window_y))
         coordinates = self.coordinates
-        self.preview_image = PreviewImageFrame(popup_master)
+        self.preview_image = PreviewImageFrame(popup_master, True)
         self.preview_image.set_coordinates(coordinates)
         self.preview_image.set_bg_color(self.BG_COLOR)
         self.preview_image.change_text_color(self.TEXT_COLOR)
@@ -123,7 +128,12 @@ class MainWindow(tk.Frame):
         
     def popup_split_keys(self):
         popup_master = tk.Toplevel(self.root)
-        self.split_keys = HotkeysFrame(popup_master)
+        button_x = self.hotkeys_button.winfo_x()
+        button_y = self.hotkeys_button.winfo_y()
+        popup_window_x = int(self.root.winfo_x() + button_x + (self.hotkeys_button.winfo_width() / 2))
+        popup_window_y = int(self.root.winfo_y() + button_y + (self.hotkeys_button.winfo_height() / 2))
+        popup_master.geometry('+{0}+{1}'.format(popup_window_x, popup_window_y))
+        self.split_keys = HotkeysFrame(popup_master, True)
         self.split_keys.set_hotkeys(self.hotkeys)
         self.split_keys.set_bg_color(self.BG_COLOR)
         self.split_keys.set_alt_color(self.ALT_BG_COLOR)
