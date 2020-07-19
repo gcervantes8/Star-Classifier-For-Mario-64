@@ -11,7 +11,6 @@ from gui.make_draggable import Draggable
 from gui.dropdown_frame import DropdownFrame
 
 from PIL import ImageTk, Image
-import pyautogui
 
 # Module in src folder that takes screenshots
 from src.screenshot_taker import ScreenshotTaker
@@ -25,20 +24,29 @@ class ImageSelect(tk.Frame):
     SELECT_OPTS = dict(dash=(2, 2), stipple='gray25', fill='red',
                        outline='')
 
-    def __init__(self, parent, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
+    def __init__(self, parent, custom_title_bar=True):
+        self.root = parent
+        tk.Frame.__init__(self, parent)
+        if custom_title_bar:
+            self.title_bar = TitleBar(self, window_root=parent, width=400, height=5)
+            self.title_bar.grid(column=0, row=0, rowspan=1, columnspan=2, padx=2, pady=1)
 
         path = 'images/Coordinates.png'
         img = ImageTk.PhotoImage(Image.open(path))
-        self.canvas = tk.Canvas(root, width=img.width(), height=img.height(),
+        self.canvas = tk.Canvas(self, width=img.width(), height=img.height(),
                                 borderwidth=0, highlightthickness=0)
-        self.canvas.grid(column=0, row=0, padx=5, pady=3)
+        self.canvas.grid(column=0, row=1, rowspan=10, padx=20, pady=20)
 
+        # Create outline surrounding canvas
+        self.canvas.config(highlightbackground='white', highlightthickness=2)
 
         self.canvas.create_image(0, 0, image=img, anchor=tk.NW)
         self.canvas.img = img  # Keep reference.
-        self.dropdown = DropdownFrame(self)
-        self.dropdown.grid(column=0, row=1, padx=5, pady=3)
+        self.dropdown = DropdownFrame(self, dropdown_strs=['Desktop'], set_width=12, command=self.dropdown_changed)
+        self.dropdown.grid(column=1, row=1, padx=5, pady=3)
+
+        # self. = tk.Button(self)
+        # self.dropdown.grid(column=1, row=0, padx=5, pady=3)
 
         # Create selection object to show current selection boundaries.
         self.selection_obj = SelectionObject(self.canvas, self.SELECT_OPTS)
@@ -51,11 +59,42 @@ class ImageSelect(tk.Frame):
         self.posn_tracker = MousePositionTracker(self.canvas)
         self.posn_tracker.autodraw(command=on_drag)  # Enable callbacks.
 
+    def dropdown_changed(self, *args):
+
+        # window_selected = self.dropdown.get_selected_option()
+        screenshot_taker = ScreenshotTaker()
+        width = 1920
+        height = 1080
+        pil_img,_  = screenshot_taker.screenshot_mss(0, 0, width, height)
+        self.canvas.img = ImageTk.PhotoImage(pil_img)
+        self.canvas.create_image(0, 0, image=self.canvas.img, anchor=tk.NW)
+        self.canvas.conifg(width=width, height=height)
+        print('Screenshot changed')
+
     def set_new_image(self, new_img):
         self.canvas.img = new_img
 
+    def set_bg_color(self, color):
+        self.configure(background=color)
+        self.dropdown.change_color(color=color)
 
-class MousePositionTracker(tk.Frame):
+    def change_text_size(self, size):
+        self.dropdown.change_text_size(size)
+        self.dropdown.change_text_color('white')
+
+    def change_text_font(self, font_family):
+        self.dropdown.change_text_font(font_family)
+
+    def get_coordinates(self):
+        return self.selection_obj.get_coordinates()
+
+    # Returns coordinates when the frame is closed
+    def show(self):
+        self.wait_window()
+        return self.get_coordinates()
+
+
+class MousePositionTracker:
     """ Tkinter Canvas mouse position widget. """
 
     def __init__(self, canvas):
@@ -129,33 +168,47 @@ class SelectionObject:
         select_opts2 = dict(dash=(2, 2), fill='', outline='white', state=tk.HIDDEN)
 
         # Initial extrema of inner and outer rectangles.
-        imin_x, imin_y,  imax_x, imax_y = 0, 0,  1, 1
+        self.imin_x, self.imin_y,  self.imax_x, self.imax_y = 0, 0,  1, 1
         omin_x, omin_y,  omax_x, omax_y = 0, 0,  self.width, self.height
 
         self.rects = (
             # Area *outside* selection (inner) rectangle.
-            self.canvas.create_rectangle(omin_x, omin_y,  omax_x, imin_y, **select_opts1),
-            self.canvas.create_rectangle(omin_x, imin_y,  imin_x, imax_y, **select_opts1),
-            self.canvas.create_rectangle(imax_x, imin_y,  omax_x, imax_y, **select_opts1),
-            self.canvas.create_rectangle(omin_x, imax_y,  omax_x, omax_y, **select_opts1),
+            self.canvas.create_rectangle(omin_x, omin_y,  omax_x, self.imin_y, **select_opts1),
+            self.canvas.create_rectangle(omin_x, self.imin_y,  self.imin_x, self.imax_y, **select_opts1),
+            self.canvas.create_rectangle(self.imax_x, self.imin_y,  omax_x, self.imax_y, **select_opts1),
+            self.canvas.create_rectangle(omin_x, self.imax_y,  omax_x, omax_y, **select_opts1),
             # Inner rectangle.
-            self.canvas.create_rectangle(imin_x, imin_y,  imax_x, imax_y, **select_opts2)
+            self.canvas.create_rectangle(self.imin_x, self.imin_y,  self.imax_x, self.imax_y, **select_opts2)
         )
 
     def update(self, start, end):
         # Current extrema of inner and outer rectangles.
-        imin_x, imin_y,  imax_x, imax_y = self._get_coords(start, end)
+        self.imin_x, self.imin_y,  self.imax_x, self.imax_y = self._get_coords(start, end)
         omin_x, omin_y,  omax_x, omax_y = 0, 0,  self.width, self.height
 
         # Update coords of all rectangles based on these extrema.
-        self.canvas.coords(self.rects[0], omin_x, omin_y,  omax_x, imin_y),
-        self.canvas.coords(self.rects[1], omin_x, imin_y,  imin_x, imax_y),
-        self.canvas.coords(self.rects[2], imax_x, imin_y,  omax_x, imax_y),
-        self.canvas.coords(self.rects[3], omin_x, imax_y,  omax_x, omax_y),
-        self.canvas.coords(self.rects[4], imin_x, imin_y,  imax_x, imax_y),
+        self.canvas.coords(self.rects[0], omin_x, omin_y,  omax_x, self.imin_y),
+        self.canvas.coords(self.rects[1], omin_x, self.imin_y,  self.imin_x, self.imax_y),
+        self.canvas.coords(self.rects[2], self.imax_x, self.imin_y,  omax_x, self.imax_y),
+        self.canvas.coords(self.rects[3], omin_x, self.imax_y,  omax_x, omax_y),
+        self.canvas.coords(self.rects[4], self.imin_x, self.imin_y,  self.imax_x, self.imax_y),
 
         for rect in self.rects:  # Make sure all are now visible.
             self.canvas.itemconfigure(rect, state=tk.NORMAL)
+
+    def get_coordinates(self):
+
+        # imin_x and y are the top-left corner
+        x = self.imin_x
+        y = self.imin_y
+
+        # imax x and y are the bottom-right corner
+        x2 = self.imax_x
+        y2 = self.imax_y
+
+        width = x2 - x
+        height = y2 - y
+        return x, y, width, height
 
     def _get_coords(self, start, end):
         """ Determine coords of a polygon defined by the start and
@@ -176,9 +229,10 @@ if __name__ == "__main__":
 
     root = tk.Tk()
     root.title(TITLE)
-    root.geometry('%sx%s' % (WIDTH, HEIGHT))
+    # root.geometry('%sx%s' % (WIDTH, HEIGHT))
     root.configure(background=BACKGROUND)
 
-    app = ImageSelect(root, background=BACKGROUND)
-    #app.pack(side=tk.TOP, fill=tk.BOTH, expand=tk.TRUE)
+    app = ImageSelect(root)
+
+    app.pack()
     app.mainloop()

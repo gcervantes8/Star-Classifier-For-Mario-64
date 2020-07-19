@@ -15,23 +15,31 @@ class DropdownFrame(tk.Frame):
     FONT = 'Arial'
     DEFAULT_VALUE = 'No routes'
 
-    def __init__(self, master):
+    def __init__(self, master, dropdown_strs=None, set_width=None, command=None):
         self.root = master
         tk.Frame.__init__(self, master)
         
         self.options = ['?']
         self._string_var = tk.StringVar(master)
-        self.drop_down = self.create_drop_down(self, self._string_var, self.options)
+        self.drop_down = self.create_drop_down(self, self._string_var, set_width, self.options)
         self.drop_down.grid(column=0, row=0, columnspan=2)
         self.change_color(self.COLOR)
         self.font = Font(family=self.FONT, size=self.FONT_SIZE, weight='bold')
         self.drop_down.config(font=self.font)
         self.drop_down.configure(highlightthickness=0)
+
+        if command is not None:
+            # print(self.drop_down.keys())
+            self._string_var.trace('w', command)
+        if dropdown_strs is not None:
+            self.set_drop_down_options(dropdown_strs)
         
-    def create_drop_down(self, master, string_var, menu_options):
+    def create_drop_down(self, master, string_var, set_width, menu_options):
 
         string_var.set(menu_options[0])  # default value is the first value
         self.drop_down = tk.OptionMenu(master, string_var, *menu_options)
+        if set_width is not None:
+            self.drop_down.config(width=set_width)
         return self.drop_down
     
     # Options is the list of items it will set the drop-down as
