@@ -20,6 +20,9 @@ from src.screenshot_taker import ScreenshotTaker
 
 class ImageSelect(tk.Frame):
 
+    CANVAS_WIDTH = 800
+    CANVAS_HEIGHT = 600
+
     # Default selection object options.
     SELECT_OPTS = dict(dash=(2, 2), stipple='gray25', fill='red',
                        outline='')
@@ -33,15 +36,31 @@ class ImageSelect(tk.Frame):
 
         path = 'images/Coordinates.png'
         img = ImageTk.PhotoImage(Image.open(path))
-        self.canvas = tk.Canvas(self, width=img.width(), height=img.height(),
+        self.canvas_frame = tk.Frame(self, width=self.CANVAS_WIDTH, height=self.CANVAS_HEIGHT)
+        self.canvas_frame.grid(column=0, row=1, rowspan=10, padx=20, pady=20)
+
+        self.canvas = tk.Canvas(self.canvas_frame, width=self.CANVAS_WIDTH, height=self.CANVAS_HEIGHT,
                                 borderwidth=0, highlightthickness=0)
-        self.canvas.grid(column=0, row=1, rowspan=10, padx=20, pady=20)
+        self.canvas.configure(scrollregion=self.canvas.bbox('all'))
+        self.canvas.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
+
+        vert_scroll_bar = tk.Scrollbar(self.canvas_frame, orient=tk.VERTICAL)
+        horz_scroll_bar = tk.Scrollbar(self.canvas_frame, orient=tk.HORIZONTAL)
+
+        vert_scroll_bar.pack(side=tk.RIGHT, fill=tk.Y)
+        horz_scroll_bar.pack(side=tk.BOTTOM, fill=tk.X)
+
+        vert_scroll_bar.config(command=self.canvas.yview)
+        horz_scroll_bar.config(command=self.canvas.xview)
+
+        self.canvas.config(xscrollcommand=horz_scroll_bar.set, yscrollcommand=vert_scroll_bar.set)
 
         # Create outline surrounding canvas
         self.canvas.config(highlightbackground='white', highlightthickness=2)
 
         self.canvas.create_image(0, 0, image=img, anchor=tk.NW)
         self.canvas.img = img  # Keep reference.
+        self.canvas.bind_all('<MouseWheel>', self._on_mousewheel)
         self.dropdown = DropdownFrame(self, dropdown_strs=['Desktop'], set_width=12, command=self.dropdown_changed)
         self.dropdown.grid(column=1, row=1, padx=5, pady=3)
 
@@ -59,16 +78,22 @@ class ImageSelect(tk.Frame):
         self.posn_tracker = MousePositionTracker(self.canvas)
         self.posn_tracker.autodraw(command=on_drag)  # Enable callbacks.
 
+    def _on_mousewheel(self, event):
+        scroll_units = int(-1 * (event.delta / 120))
+        self.canvas.yview_scroll(scroll_units, 'units')
+
     def dropdown_changed(self, *args):
 
         # window_selected = self.dropdown.get_selected_option()
         screenshot_taker = ScreenshotTaker()
         width = 1920
         height = 1080
-        pil_img,_  = screenshot_taker.screenshot_mss(0, 0, width, height)
+        pil_img, _ = screenshot_taker.screenshot_mss(0, 0, width, height)
         self.canvas.img = ImageTk.PhotoImage(pil_img)
         self.canvas.create_image(0, 0, image=self.canvas.img, anchor=tk.NW)
-        self.canvas.conifg(width=width, height=height)
+        # print(self.canvas.keys())
+        self.canvas.config(width=self.CANVAS_WIDTH, height=self.CANVAS_HEIGHT)
+        self.canvas_frame.config(width=self.CANVAS_WIDTH, height=self.CANVAS_HEIGHT)
         print('Screenshot changed')
 
     def set_new_image(self, new_img):
@@ -109,21 +134,27 @@ class MousePositionTracker:
                       self.canvas.create_line(0, 0, self.canv_width,  0, **xhair_opts))
 
     def cur_selection(self):
-        return (self.start, self.end)
+        return self.start, self.end
 
     def begin(self, event):
         self.hide()
-        self.start = (event.x, event.y)  # Remember position (no drawing).
+        # Scroll-bar safe mouse coordinates
+        x, y = self.canvas.canvasx(event.x), self.canvas.canvasy(event.y)
+        self.start = (x, y)
 
     def update(self, event):
-        self.end = (event.x, event.y)
+        # Scroll-bar safe mouse coordinates
+        x, y = self.canvas.canvasx(event.x), self.canvas.canvasy(event.y)
+        self.end = (x, y)
         self._update(event)
-        self._command(self.start, (event.x, event.y))  # User callback.
+        self._command(self.start, (x, y))  # User callback.
 
     def _update(self, event):
+        # Scroll-bar safe mouse coordinates
+        x, y = self.canvas.canvasx(event.x), self.canvas.canvasy(event.y)
         # Update cross-hair lines.
-        self.canvas.coords(self.lines[0], event.x, 0, event.x, self.canv_height)
-        self.canvas.coords(self.lines[1], 0, event.y, self.canv_width, event.y)
+        self.canvas.coords(self.lines[0], x, 0, x, self.canv_height)
+        self.canvas.coords(self.lines[1], 0, y, self.canv_width, y)
         self.show()
 
     def reset(self):
