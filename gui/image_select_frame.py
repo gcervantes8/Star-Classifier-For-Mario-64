@@ -31,7 +31,7 @@ class ImageSelect(tk.Frame):
         self.root = parent
         tk.Frame.__init__(self, parent)
         if custom_title_bar:
-            self.title_bar = TitleBar(self, window_root=parent, width=400, height=5)
+            self.title_bar = TitleBar(self, window_root=parent, width=200 + self.CANVAS_WIDTH, height=5)
             self.title_bar.grid(column=0, row=0, rowspan=1, columnspan=2, padx=2, pady=1)
 
         path = 'images/Coordinates.png'
@@ -39,24 +39,28 @@ class ImageSelect(tk.Frame):
         self.canvas_frame = tk.Frame(self, width=self.CANVAS_WIDTH, height=self.CANVAS_HEIGHT)
         self.canvas_frame.grid(column=0, row=1, rowspan=10, padx=20, pady=20)
 
+        # Children of canvas_frame
         self.canvas = tk.Canvas(self.canvas_frame, width=self.CANVAS_WIDTH, height=self.CANVAS_HEIGHT,
                                 borderwidth=0, highlightthickness=0)
-        self.canvas.configure(scrollregion=self.canvas.bbox('all'))
-        self.canvas.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
-
         vert_scroll_bar = tk.Scrollbar(self.canvas_frame, orient=tk.VERTICAL)
         horz_scroll_bar = tk.Scrollbar(self.canvas_frame, orient=tk.HORIZONTAL)
 
-        vert_scroll_bar.pack(side=tk.RIGHT, fill=tk.Y)
-        horz_scroll_bar.pack(side=tk.BOTTOM, fill=tk.X)
+        vert_scroll_bar.grid(column=1, row=0, padx=1, pady=1)
+        horz_scroll_bar.grid(column=0, row=1, padx=1, pady=1)
+        self.canvas.grid(column=0, row=0, padx=1, pady=1)
 
         vert_scroll_bar.config(command=self.canvas.yview)
         horz_scroll_bar.config(command=self.canvas.xview)
 
+        # Set the scroll region
+        def set_scrollregion(event):
+            self.canvas.configure(scrollregion=self.canvas.bbox('all'))
+        self.canvas_frame.bind('<Configure>', set_scrollregion)
+
         self.canvas.config(xscrollcommand=horz_scroll_bar.set, yscrollcommand=vert_scroll_bar.set)
 
         # Create outline surrounding canvas
-        self.canvas.config(highlightbackground='white', highlightthickness=2)
+        # self.canvas.config(highlightbackground='white', highlightthickness=2)
 
         self.canvas.create_image(0, 0, image=img, anchor=tk.NW)
         self.canvas.img = img  # Keep reference.
@@ -124,14 +128,12 @@ class MousePositionTracker:
 
     def __init__(self, canvas):
         self.canvas = canvas
-        self.canv_width = self.canvas.cget('width')
-        self.canv_height = self.canvas.cget('height')
         self.reset()
 
         # Create canvas cross-hair lines.
         xhair_opts = dict(dash=(3, 2), fill='white', state=tk.HIDDEN)
-        self.lines = (self.canvas.create_line(0, 0, 0, self.canv_height, **xhair_opts),
-                      self.canvas.create_line(0, 0, self.canv_width,  0, **xhair_opts))
+        self.lines = (self.canvas.create_line(0, 0, 0, self.canvas.img.height(), **xhair_opts),
+                      self.canvas.create_line(0, 0, self.canvas.img.width(),  0, **xhair_opts))
 
     def cur_selection(self):
         return self.start, self.end
@@ -153,8 +155,8 @@ class MousePositionTracker:
         # Scroll-bar safe mouse coordinates
         x, y = self.canvas.canvasx(event.x), self.canvas.canvasy(event.y)
         # Update cross-hair lines.
-        self.canvas.coords(self.lines[0], x, 0, x, self.canv_height)
-        self.canvas.coords(self.lines[1], 0, y, self.canv_width, y)
+        self.canvas.coords(self.lines[0], x, 0, x, self.canvas.img.height())
+        self.canvas.coords(self.lines[1], 0, y, self.canvas.img.width(), y)
         self.show()
 
     def reset(self):
@@ -189,8 +191,6 @@ class SelectionObject:
         # Create a selection objects for updating.
         self.canvas = canvas
         self.select_opts1 = select_opts
-        self.width = self.canvas.cget('width')
-        self.height = self.canvas.cget('height')
 
         # Options for areas outside rectangular selection.
         select_opts1 = self.select_opts1.copy()
@@ -200,8 +200,9 @@ class SelectionObject:
 
         # Initial extrema of inner and outer rectangles.
         self.imin_x, self.imin_y,  self.imax_x, self.imax_y = 0, 0,  1, 1
-        omin_x, omin_y,  omax_x, omax_y = 0, 0,  self.width, self.height
-
+        omin_x, omin_y,  omax_x, omax_y = 0, 0,  self.canvas.img.width(), self.canvas.img.height()
+        print('Width: ' + str(self.canvas.cget('width')))
+        print('Height: ' + str(self.canvas.cget('height')))
         self.rects = (
             # Area *outside* selection (inner) rectangle.
             self.canvas.create_rectangle(omin_x, omin_y,  omax_x, self.imin_y, **select_opts1),
@@ -215,7 +216,7 @@ class SelectionObject:
     def update(self, start, end):
         # Current extrema of inner and outer rectangles.
         self.imin_x, self.imin_y,  self.imax_x, self.imax_y = self._get_coords(start, end)
-        omin_x, omin_y,  omax_x, omax_y = 0, 0,  self.width, self.height
+        omin_x, omin_y,  omax_x, omax_y = 0, 0,  self.canvas.img.width(), self.canvas.img.height()
 
         # Update coords of all rectangles based on these extrema.
         self.canvas.coords(self.rects[0], omin_x, omin_y,  omax_x, self.imin_y),
