@@ -15,7 +15,7 @@ from PIL import ImageTk, Image
 # Module in src folder that takes screenshots
 from src.screenshot_taker import ScreenshotTaker
 
-# Used code from: https://stackoverflow.com/a/55772675/10062180
+# Used code from for basic drag template: https://stackoverflow.com/a/55772675/10062180
 
 
 class ImageSelect(tk.Frame):
@@ -34,13 +34,15 @@ class ImageSelect(tk.Frame):
         if custom_title_bar:
             self.title_bar = TitleBar(self, window_root=parent, width=200 + self.CANVAS_WIDTH, height=5)
             self.title_bar.grid(column=0, row=0, rowspan=1, columnspan=2, padx=2, pady=1)
-
+        self.draggable = Draggable(self, parent)
         self.canvas_frame = tk.Frame(self, width=self.CANVAS_WIDTH, height=self.CANVAS_HEIGHT)
         self.canvas_frame.grid(column=0, row=1, rowspan=10, padx=20, pady=20)
+        self.canvas_frame.config(borderwidth=2, highlightcolor='white')
 
         # Children of canvas_frame
         self.canvas = tk.Canvas(self.canvas_frame, width=self.CANVAS_WIDTH, height=self.CANVAS_HEIGHT,
-                                borderwidth=0, highlightthickness=0)
+                                borderwidth=0, highlightthickness=0, cursor='crosshair')
+        self.canvas.config(background='gray')
         vert_scroll_bar = tk.Scrollbar(self.canvas_frame, orient=tk.VERTICAL)
         horz_scroll_bar = tk.Scrollbar(self.canvas_frame, orient=tk.HORIZONTAL)
 
@@ -55,7 +57,7 @@ class ImageSelect(tk.Frame):
         def set_scrollregion(event):
             self.canvas.configure(scrollregion=self.canvas.bbox('all'))
         self.canvas_frame.bind('<Configure>', set_scrollregion)
-
+        self.canvas.is_mouse_in_img = self.is_mouse_in_img
         self.canvas.config(xscrollcommand=horz_scroll_bar.set, yscrollcommand=vert_scroll_bar.set)
         self.canvas.bind_all('<MouseWheel>', self._on_mousewheel)
 
@@ -70,13 +72,16 @@ class ImageSelect(tk.Frame):
         # Create selection object to show current selection boundaries.
         self.selection_obj = SelectionObject(self.canvas, self.SELECT_OPTS)
 
-        # Callback function to update it given two points of its diagonal.
-        def on_drag(start, end, **kwarg):  # Must accept these arguments.
+        # Callback function to update given two points of its diagonal.
+        def on_drag(start, end, **kwarg):
             self.selection_obj.update(start, end)
 
         # Create mouse position tracker that uses the function.
         self.posn_tracker = MousePositionTracker(self.canvas)
         self.posn_tracker.autodraw(command=on_drag)  # Enable callbacks.
+
+        # Change mouse cursor on image hover
+        self.canvas.bind("<Motion>", self.check_hand)
 
         self.is_initialized = True
 
@@ -94,6 +99,24 @@ class ImageSelect(tk.Frame):
             pil_img, _ = screenshot_taker.screenshot_mss(0, 0, width, height)
             self.change_canvas_image(pil_img)
         print('dropdown_modified')
+
+    # https://stackoverflow.com/a/54605894/10062180
+    # Checks if mouse cursor is hovering of the image, change to crosshair if so, image needs to be created first
+    def check_hand(self, event):  # runs on mouse motion
+
+        if self.is_mouse_in_img(event):
+            self.canvas.config(cursor='crosshair')
+        else:
+            self.canvas.config(cursor='')
+
+    def is_mouse_in_img(self, event):
+        bbox = self.canvas.bbox(self.canvas.img_id)
+        x = self.canvas.canvasx(event.x)
+        y = self.canvas.canvasy(event.y)
+        # Checks boundaries
+        if bbox[0] < x < bbox[2] and bbox[1] < y < bbox[3]:
+            return True
+        return False
 
     def change_canvas_image(self, pil_img):
         self.canvas.delete('all')
@@ -134,6 +157,8 @@ class MousePositionTracker:
 
     def __init__(self, canvas):
         self.canvas = canvas
+        self.start = self.end = None
+        self._command = None
         self.reset()
         self.init_redraw()
 
@@ -147,16 +172,15 @@ class MousePositionTracker:
         return self.start, self.end
 
     def _convert_x_coord(self, x):
-        self.canvas.canvasx(x)
+        x = self.canvas.canvasx(x)
         if x < 0:
             x = 0
-
         if x > self.canvas.img.width():
             x = self.canvas.img.width() - 1
         return x
 
     def _convert_y_coord(self, y):
-        self.canvas.canvasy(y)
+        y = self.canvas.canvasy(y)
         if y < 0:
             y = 0
         if y > self.canvas.img.height():
@@ -164,17 +188,23 @@ class MousePositionTracker:
         return y
 
     def begin(self, event):
-        self.hide()
-        # Scroll-bar safe mouse coordinates
-        x, y = self._convert_x_coord(event.x), self._convert_y_coord(event.y)
-        self.start = (x, y)
+        if self.canvas.is_mouse_in_img(event):
+            self.hide()
+            # Scroll-bar safe mouse coordinates
+            x, y = self._convert_x_coord(event.x), self._convert_y_coord(event.y)
+            print('begin' + str(x) + ', ' + str(y))
+
+            self.start = (x, y)
 
     def update(self, event):
-        # Scroll-bar safe mouse coordinates
-        x, y = self._convert_x_coord(event.x), self._convert_y_coord(event.y)
-        self.end = (x, y)
-        self._update(event)
-        self._command(self.start, (x, y))  # User callback.
+        # Only if initial click was in the image
+        if self.start is not None:
+            # Scroll-bar safe mouse coordinates
+            x, y = self._convert_x_coord(event.x), self._convert_y_coord(event.y)
+            # End is current coordinates being selected
+            self.end = (x, y)
+            self._update(event)
+            self._command(self.start, (x, y))  # User callback.
 
     def _update(self, event):
         # Scroll-bar safe mouse coordinates
@@ -204,8 +234,10 @@ class MousePositionTracker:
         self.canvas.bind("<ButtonRelease-1>", self.quit)
 
     def quit(self, event):
-        self.hide()  # Hide cross-hairs.
-        self.reset()
+        # Only if initial click was in the image
+        if self.start is not None:
+            self.hide()  # Hide cross-hairs.
+            self.reset()
 
 
 class SelectionObject:
@@ -217,6 +249,7 @@ class SelectionObject:
         self.canvas = canvas
         self.select_opts1 = select_opts
         self.init_redraw()
+        self.imin_x, self.imin_y, self.imax_x, self.imax_y = 0, 0, 0, 0
 
     # Called when image is changed, canvas redraws the rectangles (Canvas should be cleared before)
     def init_redraw(self):
@@ -260,11 +293,12 @@ class SelectionObject:
         # imin_x and y are the top-left corner
         x = self.imin_x
         y = self.imin_y
+        print('i: ' + str(x) + str(y))
 
         # imax x and y are the bottom-right corner
         x2 = self.imax_x
         y2 = self.imax_y
-
+        print('w: ' + str(x2) + str(y2))
         width = x2 - x
         height = y2 - y
         return x, y, width, height
@@ -273,8 +307,11 @@ class SelectionObject:
         """ Determine coords of a polygon defined by the start and
             end points one of the diagonals of a rectangular area.
         """
-        return (min((start[0], end[0])), min((start[1], end[1])),
-                max((start[0], end[0])), max((start[1], end[1])))
+        imin_x = min((start[0], end[0]))
+        imin_y = min((start[1], end[1]))
+        imax_x = max((start[0], end[0]))
+        imax_y = max((start[1], end[1]))
+        return imin_x, imin_y, imax_x, imax_y
 
     def hide(self):
         for rect in self.rects:
