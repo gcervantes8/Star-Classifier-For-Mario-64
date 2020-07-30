@@ -31,7 +31,7 @@ class GeneralScreenshot(PlatformScreenshot):
 
     def select_window(self, window_name):
         # Includes the last 2 digits or a space
-        monitor_num_in_str = window_name[-3:-1]
+        monitor_num_in_str = window_name[-1:]
         self.selected_monitor_index = int(monitor_num_in_str) - 1
 
     def screenshot_all_window(self):
@@ -39,9 +39,11 @@ class GeneralScreenshot(PlatformScreenshot):
         # If no monitor was selected
         if monitor_selected is None:
             return None
+        x = monitor_selected['left']
+        y = monitor_selected['top']
         width = monitor_selected['width']
         height = monitor_selected['height']
-        return self.screenshot_mss(0, 0, width, height)
+        return self.screenshot_mss(x, y, width, height)
 
     def screenshot(self, x, y, width, height):
         monitor_selected = self._find_monitor()
@@ -59,6 +61,7 @@ class GeneralScreenshot(PlatformScreenshot):
         if self.selected_monitor_index is not None:
             monitor_selected = self.sct.monitors[self.selected_monitor_index]
             return monitor_selected
+        print('Did not find monitor')
         return None
 
     # Top and left are coordinates of the top-left of the window where you want the screenshot

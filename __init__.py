@@ -15,6 +15,7 @@ from gui.hotkeys_frame import HotkeysFrame
 from gui.start_button_frame import StartButtonFrame
 from gui.title_bar import TitleBar
 from gui.make_draggable import Draggable
+from gui.image_select_frame import ImageSelect
 
 from threading import Thread
 
@@ -23,6 +24,7 @@ from src.coordinates import Coordinates
 from src.hotkeys import Hotkeys
 from src.shared_preferences import SharedPreferences
 from src.route_file_handler import RouteFileHandler
+from src.screenshot_taker import ScreenshotTaker
 
 
 class MainWindow(tk.Frame):
@@ -59,7 +61,7 @@ class MainWindow(tk.Frame):
         self._init_preferences()
         self.draggable = Draggable(self.root, self.root)
         self.font = Font(family=self.FONT, size=self.FONT_SIZE, weight='bold')
-
+        self.screenshot_taker = ScreenshotTaker()
         # Creates frames
         self.title_bar = TitleBar(master, width=345)
         self.progress_display_frame = ProgressDisplayFrame(master)
@@ -114,10 +116,10 @@ class MainWindow(tk.Frame):
         popup_window_y = int(self.root.winfo_y() + button_y + (self.coordinates_button.winfo_height()/2))
         popup_master.geometry('+{0}+{1}'.format(popup_window_x, popup_window_y))
         coordinates = self.coordinates
-        self.preview_image = PreviewImageFrame(popup_master, True)
-        self.preview_image.set_coordinates(coordinates)
+        self.preview_image = ImageSelect(popup_master, self.screenshot_taker, True)
+        # self.preview_image.set_coordinates(coordinates)
         self.preview_image.set_bg_color(self.BG_COLOR)
-        self.preview_image.change_text_color(self.TEXT_COLOR)
+        # self.preview_image.change_text_color(self.TEXT_COLOR)
         self.preview_image.change_text_size(self.FONT_SIZE)
         self.preview_image.change_text_font(self.FONT)
         self.preview_image.grid(column=0, row=0, columnspan=2, padx=0, pady=0)
@@ -144,7 +146,7 @@ class MainWindow(tk.Frame):
         self.load_icon(app.icon_path, popup_master)
         self.split_keys.show()
         self.save_classifier_preferences(self.PREFERENCES_FILE_NAME)
-        
+
     def popup_msg(self, title, msg):
         messagebox.showwarning(title, msg)
     
