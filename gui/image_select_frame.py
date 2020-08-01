@@ -20,24 +20,26 @@ from src.screenshot_taker import ScreenshotTaker
 
 class ImageSelect(tk.Frame):
 
-    CANVAS_WIDTH = 800
+    CANVAS_WIDTH = 1000
     CANVAS_HEIGHT = 600
 
     # Default selection object options.
-    SELECT_OPTS = dict(dash=(2, 2), stipple='gray25', fill='red',
+    SELECT_OPTS = dict(dash=(2, 2), stipple='gray25', fill='royal blue',
                        outline='')
     is_initialized = False
+    str_displayed = None
 
-    def __init__(self, parent, custom_title_bar=True):
+    def __init__(self, parent, screenshot_taker, custom_title_bar=True):
         self.root = parent
         tk.Frame.__init__(self, parent)
+        self.screenshot_taker = screenshot_taker
         if custom_title_bar:
-            self.title_bar = TitleBar(self, window_root=parent, width=200 + self.CANVAS_WIDTH, height=5)
+            self.title_bar = TitleBar(self, window_root=parent, width=self.CANVAS_WIDTH - 110, height=5)
             self.title_bar.grid(column=0, row=0, rowspan=1, columnspan=2, padx=2, pady=1)
         self.draggable = Draggable(self, parent)
         self.canvas_frame = tk.Frame(self, width=self.CANVAS_WIDTH, height=self.CANVAS_HEIGHT)
-        self.canvas_frame.grid(column=0, row=1, rowspan=10, padx=20, pady=20)
-        self.canvas_frame.config(borderwidth=2, highlightcolor='white')
+        self.canvas_frame.grid(column=0, row=2, rowspan=20, padx=1, pady=2)
+        # self.canvas_frame.config(borderwidth=2, highlightcolor='white')
 
         # Children of canvas_frame
         self.canvas = tk.Canvas(self.canvas_frame, width=self.CANVAS_WIDTH, height=self.CANVAS_HEIGHT,
@@ -66,8 +68,9 @@ class ImageSelect(tk.Frame):
         pil_img = Image.open(path)
         self.change_canvas_image(pil_img)
 
-        self.dropdown = DropdownFrame(self, dropdown_strs=['Desktop'], set_width=12, command=self.dropdown_changed)
-        self.dropdown.grid(column=1, row=1, padx=5, pady=3)
+        self.dropdown = DropdownFrame(self, default_value='Select Game!', dropdown_strs=['Desktop'], set_width=45,
+                                      clicked_command=self.dropdown_clicked, changed_command=self.dropdown_changed)
+        self.dropdown.grid(column=0, row=1, padx=5, pady=3)
 
         # Create selection object to show current selection boundaries.
         self.selection_obj = SelectionObject(self.canvas, self.SELECT_OPTS)
@@ -89,19 +92,26 @@ class ImageSelect(tk.Frame):
         scroll_units = int(-1 * (event.delta / 120))
         self.canvas.yview_scroll(scroll_units, 'units')
 
-    def dropdown_changed(self, *args):
+    def dropdown_clicked(self, event):
+        window_and_monitor_names = self.screenshot_taker.get_windows_and_monitors_names()
+        self.dropdown.set_drop_down_options(window_and_monitor_names)
 
-        # window_selected = self.dropdown.get_selected_option()
-        if self.is_initialized:
-            screenshot_taker = ScreenshotTaker()
-            width = 1920
-            height = 1080
-            pil_img, _ = screenshot_taker.screenshot_mss(0, 0, width, height)
-            self.change_canvas_image(pil_img)
-        print('dropdown_modified')
+    def dropdown_changed(self, str_displayed, *args):
+        str_displayed = str_displayed.get()
+        print('Previous dropdown op ' + str(self.str_displayed) + ' new op: ' + str(str_displayed))
+
+        is_changed = self.str_displayed is not str_displayed
+        if self.is_initialized and is_changed:
+            self.str_displayed = str_displayed
+            selected_option = self.dropdown.get_selected_option()
+            print('Selected option: ' + str(selected_option))
+            self.screenshot_taker.select_window(selected_option)
+            pil_img = self.screenshot_taker.screenshot_all_window()
+            if pil_img is not None:
+                self.change_canvas_image(pil_img)
 
     # https://stackoverflow.com/a/54605894/10062180
-    # Checks if mouse cursor is hovering of the image, change to crosshair if so, image needs to be created first
+    # Checks if mouse cursor is hovering of the image, change to cross-hair cursor if so, image has to be created first
     def check_hand(self, event):  # runs on mouse motion
 
         if self.is_mouse_in_img(event):
@@ -135,6 +145,7 @@ class ImageSelect(tk.Frame):
     def set_bg_color(self, color):
         self.configure(background=color)
         self.dropdown.change_color(color=color)
+        self.canvas.config(background=color)
 
     def change_text_size(self, size):
         self.dropdown.change_text_size(size)
@@ -157,16 +168,16 @@ class MousePositionTracker:
 
     def __init__(self, canvas):
         self.canvas = canvas
-        self.start = self.end = None
+        self.start = self.end = self.lines = None
         self._command = None
         self.reset()
         self.init_redraw()
 
     def init_redraw(self):
         # Create canvas cross-hair lines.
-        xhair_opts = dict(dash=(3, 2), fill='white', state=tk.HIDDEN)
-        self.lines = (self.canvas.create_line(0, 0, 0, self.canvas.img.height(), **xhair_opts),
-                      self.canvas.create_line(0, 0, self.canvas.img.width(),  0, **xhair_opts))
+        crosshair_opts = dict(dash=(3, 2), fill='white', width=1.5, state=tk.HIDDEN)
+        self.lines = (self.canvas.create_line(0, 0, 0, self.canvas.img.height(), **crosshair_opts),
+                      self.canvas.create_line(0, 0, self.canvas.img.width(),  0, **crosshair_opts))
 
     def cur_selection(self):
         return self.start, self.end
@@ -192,7 +203,6 @@ class MousePositionTracker:
             self.hide()
             # Scroll-bar safe mouse coordinates
             x, y = self._convert_x_coord(event.x), self._convert_y_coord(event.y)
-            print('begin' + str(x) + ', ' + str(y))
 
             self.start = (x, y)
 
@@ -244,12 +254,17 @@ class SelectionObject:
     """ Widget to display a rectangular area on given canvas defined by two points
         representing its diagonal.
     """
+
+    select_opts2 = dict(fill='', outline='black', width=2, state=tk.HIDDEN)
+    select_opts3 = dict(dash=(12, 8), fill='', outline='white', width=2, state=tk.HIDDEN)
+
     def __init__(self, canvas, select_opts):
         # Create a selection objects for updating.
         self.canvas = canvas
         self.select_opts1 = select_opts
+        self.rects = None
         self.init_redraw()
-        self.imin_x, self.imin_y, self.imax_x, self.imax_y = 0, 0, 0, 0
+        self.min_x, self.min_y, self.max_x, self.max_y = 0, 0, 0, 0
 
     # Called when image is changed, canvas redraws the rectangles (Canvas should be cleared before)
     def init_redraw(self):
@@ -257,48 +272,47 @@ class SelectionObject:
         select_opts1 = self.select_opts1.copy()
         select_opts1.update({'state': tk.HIDDEN})  # Hide initially.
         # Separate options for area inside rectangular selection.
-        select_opts2 = dict(dash=(2, 2), fill='', outline='white', state=tk.HIDDEN)
+
         # Initial extrema of inner and outer rectangles.
-        self.imin_x, self.imin_y,  self.imax_x, self.imax_y = 0, 0,  1, 1
+        self.min_x, self.min_y,  self.max_x, self.max_y = 0, 0,  1, 1
         omin_x, omin_y,  omax_x, omax_y = 0, 0,  self.canvas.img.width(), self.canvas.img.height()
-        print('Width: ' + str(self.canvas.cget('width')))
-        print('Height: ' + str(self.canvas.cget('height')))
+
         self.rects = (
             # Area *outside* selection (inner) rectangle.
-            self.canvas.create_rectangle(omin_x, omin_y,  omax_x, self.imin_y, **select_opts1),
-            self.canvas.create_rectangle(omin_x, self.imin_y,  self.imin_x, self.imax_y, **select_opts1),
-            self.canvas.create_rectangle(self.imax_x, self.imin_y,  omax_x, self.imax_y, **select_opts1),
-            self.canvas.create_rectangle(omin_x, self.imax_y,  omax_x, omax_y, **select_opts1),
-            # Inner rectangle.
-            self.canvas.create_rectangle(self.imin_x, self.imin_y,  self.imax_x, self.imax_y, **select_opts2)
+            self.canvas.create_rectangle(omin_x, omin_y,  omax_x, self.min_y, **select_opts1),
+            self.canvas.create_rectangle(omin_x, self.min_y,  self.min_x, self.max_y, **select_opts1),
+            self.canvas.create_rectangle(self.max_x, self.min_y,  omax_x, self.max_y, **select_opts1),
+            self.canvas.create_rectangle(omin_x, self.max_y,  omax_x, omax_y, **select_opts1),
+            # Inner rectangle. (Black outline)
+            self.canvas.create_rectangle(self.min_x, self.min_y, self.max_x, self.max_y, ** self.select_opts2),
+            # Inner rectangle. (White dashed outline)
+            self.canvas.create_rectangle(self.min_x, self.min_y, self.max_x, self.max_y, ** self.select_opts3)
         )
 
     def update(self, start, end):
         # Current extrema of inner and outer rectangles.
-        self.imin_x, self.imin_y,  self.imax_x, self.imax_y = self._get_coords(start, end)
+        self.min_x, self.min_y,  self.max_x, self.max_y = self._get_coords(start, end)
         omin_x, omin_y,  omax_x, omax_y = 0, 0,  self.canvas.img.width(), self.canvas.img.height()
 
         # Update coords of all rectangles based on these extrema.
-        self.canvas.coords(self.rects[0], omin_x, omin_y,  omax_x, self.imin_y),
-        self.canvas.coords(self.rects[1], omin_x, self.imin_y,  self.imin_x, self.imax_y),
-        self.canvas.coords(self.rects[2], self.imax_x, self.imin_y,  omax_x, self.imax_y),
-        self.canvas.coords(self.rects[3], omin_x, self.imax_y,  omax_x, omax_y),
-        self.canvas.coords(self.rects[4], self.imin_x, self.imin_y,  self.imax_x, self.imax_y),
-
+        self.canvas.coords(self.rects[0], omin_x, omin_y,  omax_x, self.min_y),
+        self.canvas.coords(self.rects[1], omin_x, self.min_y,  self.min_x, self.max_y),
+        self.canvas.coords(self.rects[2], self.max_x, self.min_y,  omax_x, self.max_y),
+        self.canvas.coords(self.rects[3], omin_x, self.max_y,  omax_x, omax_y),
+        self.canvas.coords(self.rects[4], self.min_x, self.min_y,  self.max_x, self.max_y),
+        self.canvas.coords(self.rects[5], self.min_x, self.min_y, self.max_x, self.max_y),
         for rect in self.rects:  # Make sure all are now visible.
             self.canvas.itemconfigure(rect, state=tk.NORMAL)
 
     def get_coordinates(self):
 
-        # imin_x and y are the top-left corner
-        x = self.imin_x
-        y = self.imin_y
-        print('i: ' + str(x) + str(y))
+        # min_x and y are the top-left corner
+        x = self.min_x
+        y = self.min_y
 
-        # imax x and y are the bottom-right corner
-        x2 = self.imax_x
-        y2 = self.imax_y
-        print('w: ' + str(x2) + str(y2))
+        # max x and y are the bottom-right corner
+        x2 = self.max_x
+        y2 = self.max_y
         width = x2 - x
         height = y2 - y
         return x, y, width, height
@@ -307,11 +321,11 @@ class SelectionObject:
         """ Determine coords of a polygon defined by the start and
             end points one of the diagonals of a rectangular area.
         """
-        imin_x = min((start[0], end[0]))
-        imin_y = min((start[1], end[1]))
-        imax_x = max((start[0], end[0]))
-        imax_y = max((start[1], end[1]))
-        return imin_x, imin_y, imax_x, imax_y
+        min_x = min((start[0], end[0]))
+        min_y = min((start[1], end[1]))
+        max_x = max((start[0], end[0]))
+        max_y = max((start[1], end[1]))
+        return min_x, min_y, max_x, max_y
 
     def hide(self):
         for rect in self.rects:

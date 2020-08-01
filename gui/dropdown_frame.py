@@ -13,13 +13,12 @@ class DropdownFrame(tk.Frame):
     COLOR = '#47a3cc'
     FONT_SIZE = 20
     FONT = 'Arial'
-    DEFAULT_VALUE = 'No routes'
 
-    def __init__(self, master, dropdown_strs=None, set_width=None, command=None):
+    def __init__(self, master, default_value='Select', dropdown_strs=None, set_width=None, clicked_command=None,
+                 changed_command=None):
         self.root = master
         tk.Frame.__init__(self, master)
-        
-        self.options = ['?']
+        self.options = [default_value]
         self._string_var = tk.StringVar(master)
         self.drop_down = self.create_drop_down(self, self._string_var, set_width, self.options)
         self.drop_down.grid(column=0, row=0, columnspan=2)
@@ -28,9 +27,11 @@ class DropdownFrame(tk.Frame):
         self.drop_down.config(font=self.font)
         self.drop_down.configure(highlightthickness=0)
 
-        if command is not None:
-            # print(self.drop_down.keys())
-            self._string_var.trace('w', command)
+        if clicked_command is not None:
+            self.drop_down.bind('<Button-1>', clicked_command)
+        if changed_command is not None:
+            self._string_var.trace('w', lambda *_, var=self._string_var: changed_command(var))
+
         if dropdown_strs is not None:
             self.set_drop_down_options(dropdown_strs)
         
@@ -46,18 +47,19 @@ class DropdownFrame(tk.Frame):
     def set_drop_down_options(self, options):
         self.options = list(options)
         
-        self._string_var.set(self.DEFAULT_VALUE)
+        # Delete options
         self.drop_down['menu'].delete(0, 'end')
-        for option in self.options:
-            # Private command used to add options at run time
-            self.drop_down['menu'].add_command(label=option, command=tk._setit(self._string_var, option))
-        
-        if len(self.options) != 0:
+
+        if len(self.options) == 0:
             self._string_var.set(self.options[0])  # default value
+        else:
+            for option in self.options:
+                # Private command used to add options at run time
+                self.drop_down['menu'].add_command(label=option, command=tk._setit(self._string_var, option))
 
     # Sets the given option if found in the list of options in the drop-down menu
     def set_option(self, option_name):
-        
+
         for option in self.options:
             if option_name == option:
                 self._string_var.set(option)
