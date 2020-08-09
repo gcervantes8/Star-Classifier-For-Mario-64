@@ -33,6 +33,3 @@ class ScreenshotTaker:
 
     def screenshot(self, x, y, width, height):
         return self.screenshot_instance.screenshot(x, y, width, height)
-
-
-

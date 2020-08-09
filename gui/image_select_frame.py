@@ -5,15 +5,10 @@
 """
 
 import tkinter as tk
-from tkinter.font import Font
 from gui.title_bar import TitleBar
-from gui.make_draggable import Draggable
 from gui.dropdown_frame import DropdownFrame
 
 from PIL import ImageTk, Image
-
-# Module in src folder that takes screenshots
-from src.screenshot_taker import ScreenshotTaker
 
 # Used code from for basic drag template: https://stackoverflow.com/a/55772675/10062180
 
@@ -29,22 +24,26 @@ class ImageSelect(tk.Frame):
     is_initialized = False
     str_displayed = None
 
-    def __init__(self, parent, screenshot_taker, custom_title_bar=True):
+    def __init__(self, parent, screenshot_taker):
         self.root = parent
         tk.Frame.__init__(self, parent)
         self.screenshot_taker = screenshot_taker
-        if custom_title_bar:
-            self.title_bar = TitleBar(self, window_root=parent, width=self.CANVAS_WIDTH - 110, height=5)
-            self.title_bar.grid(column=0, row=0, rowspan=1, columnspan=2, padx=2, pady=1)
-        self.draggable = Draggable(self, parent)
-        self.canvas_frame = tk.Frame(self, width=self.CANVAS_WIDTH, height=self.CANVAS_HEIGHT)
-        self.canvas_frame.grid(column=0, row=2, rowspan=20, padx=1, pady=2)
-        # self.canvas_frame.config(borderwidth=2, highlightcolor='white')
+
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
+        self.rowconfigure(1, weight=15)
+
+        self.dropdown = DropdownFrame(self, default_value='Select Game!', dropdown_strs=['Desktop'], set_width=45,
+                                      clicked_command=self.dropdown_clicked, changed_command=self.dropdown_changed)
+        self.canvas_frame = tk.Frame(self)
+
+        self.dropdown.grid(column=0, row=0, padx=5, pady=5, sticky='w')
+        self.canvas_frame.grid(column=0, row=1, padx=0, pady=0, sticky='nsew')
 
         # Children of canvas_frame
         self.canvas = tk.Canvas(self.canvas_frame, width=self.CANVAS_WIDTH, height=self.CANVAS_HEIGHT,
                                 borderwidth=0, highlightthickness=0, cursor='crosshair')
-        self.canvas.config(background='gray')
+
         vert_scroll_bar = tk.Scrollbar(self.canvas_frame, orient=tk.VERTICAL)
         horz_scroll_bar = tk.Scrollbar(self.canvas_frame, orient=tk.HORIZONTAL)
 
@@ -68,10 +67,6 @@ class ImageSelect(tk.Frame):
         pil_img = Image.open(path)
         self.change_canvas_image(pil_img)
 
-        self.dropdown = DropdownFrame(self, default_value='Select Game!', dropdown_strs=['Desktop'], set_width=45,
-                                      clicked_command=self.dropdown_clicked, changed_command=self.dropdown_changed)
-        self.dropdown.grid(column=0, row=1, padx=5, pady=3)
-
         # Create selection object to show current selection boundaries.
         self.selection_obj = SelectionObject(self.canvas, self.SELECT_OPTS)
 
@@ -84,8 +79,7 @@ class ImageSelect(tk.Frame):
         self.posn_tracker.autodraw(command=on_drag)  # Enable callbacks.
 
         # Change mouse cursor on image hover
-        self.canvas.bind("<Motion>", self.check_hand)
-
+        self.canvas.bind('<Motion>', self.check_hand)
         self.is_initialized = True
 
     def _on_mousewheel(self, event):
@@ -153,6 +147,9 @@ class ImageSelect(tk.Frame):
 
     def change_text_font(self, font_family):
         self.dropdown.change_text_font(font_family)
+
+    def change_dropdown_color(self, dropdown_color):
+        self.dropdown.change_color(dropdown_color)
 
     def get_coordinates(self):
         return self.selection_obj.get_coordinates()

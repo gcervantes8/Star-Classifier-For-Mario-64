@@ -85,7 +85,7 @@ class MainWindow(tk.Frame):
         self.progress_display_frame.change_text_size(self.FONT_SIZE)
         self.progress_display_frame.change_text_font(self.FONT)
 
-        self.coordinates_button = tk.Button(master, text='Coordinates', width=13, font=self.font,
+        self.coordinates_button = tk.Button(master, text='Screen region', width=13, font=self.font,
                                             command=self.popup_image_coordinates,
                                             background=self.CONFIG_BUTTON_COLORS, foreground=self.TEXT_COLOR)
         self.hotkeys_button = tk.Button(master, text='Setup keys', width=13, font=self.font,
@@ -115,16 +115,22 @@ class MainWindow(tk.Frame):
         popup_window_x = int(self.root.winfo_x() + button_x + (self.coordinates_button.winfo_width()/2))
         popup_window_y = int(self.root.winfo_y() + button_y + (self.coordinates_button.winfo_height()/2))
         popup_master.geometry('+{0}+{1}'.format(popup_window_x, popup_window_y))
+        # popup_master.grid(column=0, row=2, sticky='nsew')
+        popup_master.columnconfigure(0, weight=1)
+        popup_master.rowconfigure(0, weight=1)
         coordinates = self.coordinates
-        self.preview_image = ImageSelect(popup_master, self.screenshot_taker, True)
+        self.image_select = ImageSelect(popup_master, self.screenshot_taker)
         # self.preview_image.set_coordinates(coordinates)
-        self.preview_image.set_bg_color(self.BG_COLOR)
+        self.image_select.set_bg_color(self.BG_COLOR)
         # self.preview_image.change_text_color(self.TEXT_COLOR)
-        self.preview_image.change_text_size(self.FONT_SIZE)
-        self.preview_image.change_text_font(self.FONT)
-        self.preview_image.grid(column=0, row=0, columnspan=2, padx=0, pady=0)
+        self.image_select.change_dropdown_color(self.DROPDOWN_COLOR)
+        self.image_select.change_text_size(self.FONT_SIZE)
+        self.image_select.change_text_font(self.FONT)
+        self.image_select.grid(column=0, row=0, sticky='nsew')
+        # self.image_select.columnconfigure(0, weight=1)
+        # self.image_select.rowconfigure(0, weight=1)
         self.load_icon(app.icon_path, popup_master)
-        x, y, width, height = self.preview_image.show()
+        x, y, width, height = self.image_select.show()
         coordinates.set_coordinates(x, y, width, height)
         self.save_classifier_preferences(self.PREFERENCES_FILE_NAME)
         
