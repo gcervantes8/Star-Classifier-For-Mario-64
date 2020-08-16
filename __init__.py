@@ -7,7 +7,6 @@
 import tkinter as tk
 from tkinter.font import Font
 from tkinter import messagebox
-from gui.preview_image_frame import PreviewImageFrame
 from gui.progress_display_frame import ProgressDisplayFrame
 from gui.dropdown_frame import DropdownFrame
 from gui.run_status_frame import RunStatusFrame
@@ -16,6 +15,7 @@ from gui.start_button_frame import StartButtonFrame
 from gui.title_bar import TitleBar
 from gui.make_draggable import Draggable
 from gui.image_select_frame import ImageSelect
+from gui.create_route import CreateRoute
 
 from threading import Thread
 
@@ -91,6 +91,9 @@ class MainWindow(tk.Frame):
         self.hotkeys_button = tk.Button(master, text='Setup keys', width=13, font=self.font,
                                         command=self.popup_split_keys, background=self.CONFIG_BUTTON_COLORS,
                                         foreground=self.TEXT_COLOR)
+        self.route_button = tk.Button(master, text='Edit route', width=28, font=self.font,
+                                      command=self.popup_route_editing,
+                                      background=self.CONFIG_BUTTON_COLORS, foreground=self.TEXT_COLOR)
         self.progress_display_frame.config(borderwidth=2)
 
         self.title_bar.grid(column=0, row=0, rowspan=1, columnspan=3, padx=2, pady=1)
@@ -101,6 +104,7 @@ class MainWindow(tk.Frame):
         self.run_status_frame.grid(column=2, row=4, padx=0, pady=2)
         self.coordinates_button.grid(column=0, row=4, rowspan=2, padx=0, pady=1)
         self.hotkeys_button.grid(column=1, row=4, rowspan=2, padx=0, pady=1)
+        self.route_button.grid(column=0, row=6, columnspan=2, rowspan=2, padx=0, pady=1)
         route_handler = RouteFileHandler()
         # Returns a list of route objects from route directory
         routes = route_handler.get_routes_from_directory(self.routes_directory)
@@ -109,17 +113,17 @@ class MainWindow(tk.Frame):
         self.select_route_frame.set_option(self.route_name)
     
     def popup_image_coordinates(self):
-        popup_master = tk.Toplevel(self.root)
+        popup_parent = tk.Toplevel(self.root)
         button_x = self.coordinates_button.winfo_x()
         button_y = self.coordinates_button.winfo_y()
         popup_window_x = int(self.root.winfo_x() + button_x + (self.coordinates_button.winfo_width()/2))
         popup_window_y = int(self.root.winfo_y() + button_y + (self.coordinates_button.winfo_height()/2))
-        popup_master.geometry('+{0}+{1}'.format(popup_window_x, popup_window_y))
+        popup_parent.geometry('+{0}+{1}'.format(popup_window_x, popup_window_y))
         # popup_master.grid(column=0, row=2, sticky='nsew')
-        popup_master.columnconfigure(0, weight=1)
-        popup_master.rowconfigure(0, weight=1)
+        popup_parent.columnconfigure(0, weight=1)
+        popup_parent.rowconfigure(0, weight=1)
         coordinates = self.coordinates
-        self.image_select = ImageSelect(popup_master, self.screenshot_taker)
+        self.image_select = ImageSelect(popup_parent, self.screenshot_taker)
         # self.preview_image.set_coordinates(coordinates)
         self.image_select.set_bg_color(self.BG_COLOR)
         # self.preview_image.change_text_color(self.TEXT_COLOR)
@@ -129,19 +133,41 @@ class MainWindow(tk.Frame):
         self.image_select.grid(column=0, row=0, sticky='nsew')
         # self.image_select.columnconfigure(0, weight=1)
         # self.image_select.rowconfigure(0, weight=1)
-        self.load_icon(app.icon_path, popup_master)
+        self.load_icon(app.icon_path, popup_parent)
         x, y, width, height = self.image_select.show()
         coordinates.set_coordinates(x, y, width, height)
         self.save_classifier_preferences(self.PREFERENCES_FILE_NAME)
+
+    def popup_route_editing(self):
+        popup_parent = tk.Toplevel(self.root)
+        button_x = self.coordinates_button.winfo_x()
+        button_y = self.coordinates_button.winfo_y()
+        popup_window_x = int(self.root.winfo_x() + button_x + (self.coordinates_button.winfo_width()/2))
+        popup_window_y = int(self.root.winfo_y() + button_y + (self.coordinates_button.winfo_height()/2))
+        popup_parent.geometry('+{0}+{1}'.format(popup_window_x, popup_window_y))
+        # popup_master.grid(column=0, row=2, sticky='nsew')
+        popup_parent.columnconfigure(0, weight=1)
+        popup_parent.rowconfigure(0, weight=1)
+        coordinates = self.coordinates
+        self.route_editor = CreateRoute(popup_parent)
+        # self.preview_image.set_coordinates(coordinates)
+        self.route_editor.set_bg_color(self.BG_COLOR)
+        self.route_editor.change_text_color(self.TEXT_COLOR)
+        self.route_editor.change_text_size(self.FONT_SIZE)
+        self.route_editor.change_text_font(self.FONT)
+        self.route_editor.grid(column=0, row=0, sticky='nsew')
+        # self.image_select.columnconfigure(0, weight=1)
+        # self.image_select.rowconfigure(0, weight=1)
+        self.load_icon(app.icon_path, popup_parent)
         
     def popup_split_keys(self):
-        popup_master = tk.Toplevel(self.root)
+        popup_parent = tk.Toplevel(self.root)
         button_x = self.hotkeys_button.winfo_x()
         button_y = self.hotkeys_button.winfo_y()
         popup_window_x = int(self.root.winfo_x() + button_x + (self.hotkeys_button.winfo_width() / 2))
         popup_window_y = int(self.root.winfo_y() + button_y + (self.hotkeys_button.winfo_height() / 2))
-        popup_master.geometry('+{0}+{1}'.format(popup_window_x, popup_window_y))
-        self.split_keys = HotkeysFrame(popup_master, True)
+        popup_parent.geometry('+{0}+{1}'.format(popup_window_x, popup_window_y))
+        self.split_keys = HotkeysFrame(popup_parent, True)
         self.split_keys.set_hotkeys(self.hotkeys)
         self.split_keys.set_bg_color(self.BG_COLOR)
         self.split_keys.set_alt_color(self.ALT_BG_COLOR)
@@ -149,7 +175,7 @@ class MainWindow(tk.Frame):
         self.split_keys.change_text_size(self.FONT_SIZE)
         self.split_keys.change_text_font(self.FONT)
         self.split_keys.grid(column=0, row=0, columnspan=2, padx=0, pady=0)
-        self.load_icon(app.icon_path, popup_master)
+        self.load_icon(app.icon_path, popup_parent)
         self.split_keys.show()
         self.save_classifier_preferences(self.PREFERENCES_FILE_NAME)
 

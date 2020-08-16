@@ -17,15 +17,16 @@ class CreateRoute(tk.Frame):
         self.root = parent
         tk.Frame.__init__(self, parent)
         self.title_string_var = tk.StringVar()
-        title_label = tk.Label(self, text='Name')
+        self.description_string_var = tk.StringVar()
+        title_label = tk.Label(self, text='Name', anchor='w')
         title_entry = tk.Entry(self, textvariable=self.title_string_var)
-        description_label = tk.Label(self, text='Description')
-        description_entry = tk.Entry(self, textvariable=self.title_string_var)
+        description_label = tk.Label(self, text='Description', anchor='w', width=12)
+        description_entry = tk.Entry(self, textvariable=self.title_string_var, width=40)
         self.key_event_canvas = KeyEventsEdit(self)
         add_row_button = tk.Button(self, text='+', bg='green', command=self.add_row_clicked)
 
-        title_label.grid(column=0, row=0, padx=5, pady=5)
-        title_entry.grid(column=1, row=0, padx=5, pady=5)
+        title_label.grid(column=0, row=0, padx=5, pady=5, sticky='w')
+        title_entry.grid(column=1, row=0, padx=5, pady=5, sticky='w')
         description_label.grid(column=0, row=1, padx=5, pady=5)
         description_entry.grid(column=1, row=1, padx=5, pady=5)
         self.key_event_canvas.grid(column=0, row=2, columnspan=2, padx=5, pady=5)
@@ -33,6 +34,21 @@ class CreateRoute(tk.Frame):
 
     def add_row_clicked(self):
         self.key_event_canvas.add_row()
+
+    def set_bg_color(self, color):
+        self.configure(background=color)
+
+    def change_text_size(self, size):
+        pass
+        # self.dropdown.change_text_size(size)
+        # self.dropdown.change_text_color('white')
+
+    def change_text_color(self, color):
+        pass
+
+    def change_text_font(self, font_family):
+        pass
+        # self.dropdown.change_text_font(font_family)
 
 
 class KeyEventsEdit(tk.Canvas):
@@ -61,7 +77,7 @@ class KeyEventsEdit(tk.Canvas):
         # photo_img = ImageTk.PhotoImage(pil_img)
         icon = tk.Label(self)
 
-        event_type = DropdownFrame(self, default_value='', dropdown_strs=[''])
+        event_type = DropdownFrame(self, default_value='', set_width=3, dropdown_strs=[''])
         coordinates = tk.Button(self, text='Screen region')
         is_split = tk.Checkbutton(self)
 
@@ -80,7 +96,6 @@ if __name__ == "__main__":
     root = tk.Tk()
     root.title(TITLE)
     # root.geometry('%sx%s' % (WIDTH, HEIGHT))
-    root.configure(background='blue')
 
     app = CreateRoute(root)
 
