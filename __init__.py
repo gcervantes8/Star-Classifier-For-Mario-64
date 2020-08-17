@@ -156,8 +156,8 @@ class MainWindow(tk.Frame):
         self.route_editor.change_text_size(self.FONT_SIZE)
         self.route_editor.change_text_font(self.FONT)
         self.route_editor.grid(column=0, row=0, sticky='nsew')
-        # self.image_select.columnconfigure(0, weight=1)
-        # self.image_select.rowconfigure(0, weight=1)
+        self.route_editor.columnconfigure(0, weight=1)
+        self.route_editor.rowconfigure(0, weight=1)
         self.load_icon(app.icon_path, popup_parent)
         
     def popup_split_keys(self):
