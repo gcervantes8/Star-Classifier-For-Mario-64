@@ -144,7 +144,10 @@ class MainWindow(tk.Frame):
         button_y = self.coordinates_button.winfo_y()
         popup_window_x = int(self.root.winfo_x() + button_x + (self.coordinates_button.winfo_width()/2))
         popup_window_y = int(self.root.winfo_y() + button_y + (self.coordinates_button.winfo_height()/2))
-        popup_parent.geometry('+{0}+{1}'.format(popup_window_x, popup_window_y))
+        window_width= 600
+        window_height = 550
+        root.geometry('520x400+350+200')
+        popup_parent.geometry('{0}x{1}+{2}+{3}'.format(window_width, window_height, popup_window_x, popup_window_y))
         # popup_master.grid(column=0, row=2, sticky='nsew')
         popup_parent.columnconfigure(0, weight=1)
         popup_parent.rowconfigure(0, weight=1)
@@ -152,7 +155,7 @@ class MainWindow(tk.Frame):
         self.route_editor = CreateRoute(popup_parent)
         # self.preview_image.set_coordinates(coordinates)
         self.route_editor.set_bg_color(self.BG_COLOR)
-        self.route_editor.change_text_color(self.TEXT_COLOR)
+        self.route_editor.change_text_color(self.BLACK_TEXT_COLOR)
         self.route_editor.change_text_size(self.FONT_SIZE)
         self.route_editor.change_text_font(self.FONT)
         self.route_editor.grid(column=0, row=0, sticky='nsew')
