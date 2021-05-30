@@ -33,11 +33,11 @@ class RouteFileHandler:
         # Converts json input (string) to a list of integers
         try:
             splits = [int(s) for s in splits.split(',')]
-        except ValueError:
+        except (ValueError, AttributeError):
             splits = None
         try:
             fade_nums = [int(s) for s in fade_nums.split(',')]
-        except ValueError:
+        except (ValueError, AttributeError):
             fade_nums = None
             
 #        is_ordered = self._read_key(route_dict, 'Ordered')
