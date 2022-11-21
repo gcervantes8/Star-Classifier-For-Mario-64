@@ -32,7 +32,7 @@ setuptools.setup(
             'mss',
             'pypiwin32',
             'pynput',
-            'tensorflow == 1.15.4',
+            'tensorflow == 2.9.3',
             'keras == 2.2.5'
         ]
 )
